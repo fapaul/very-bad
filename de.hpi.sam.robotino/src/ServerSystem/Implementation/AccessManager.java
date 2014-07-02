@@ -16,7 +16,7 @@ public class AccessManager implements IOrderAccess, IAdminControl{
 	}
 
 	@Override
-	public void stutdown() {
+	public void shutdown() {
 		// TODO Auto-generated method stub
 		
 	}

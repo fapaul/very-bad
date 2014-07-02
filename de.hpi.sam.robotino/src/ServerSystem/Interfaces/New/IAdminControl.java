@@ -8,7 +8,7 @@ public interface IAdminControl {
 
 	void startup();
 	
-	void stutdown();
+	void shutdown();
 	
 	float setEnergyConsumption();
 	
