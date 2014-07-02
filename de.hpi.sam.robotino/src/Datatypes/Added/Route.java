@@ -1,13 +1,16 @@
 package Datatypes.Added;
 
-import de.hpi.sam.warehouse.*;
-import de.cpslab.robotino.*;
+import java.util.List;
 
 public class Route {
 	
-	RoomPoint[] getRoomPoints() {
+	private List<RoomPoint> points;
 	
-		return null;
+	public List<RoomPoint> getRoomPoints() {
+		return points;
 	}
 	
+	public void add(RoomPoint roomPoint) {
+		points.add(roomPoint);
+	}
 }
