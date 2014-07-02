@@ -114,10 +114,14 @@ public class ServerCommunication implements  IServerCommunication {
 
 	@Override
 	public boolean hasMessage() {
-		int oldLength = incoming.size();
-		incoming.addAll(serverCommServ.receiveMessages());
-		return oldLength < incoming.size();
+		fetchMessages();
+		return incoming.size() > 0;
 	}
+	
+	public void fetchMessages() {
+		incoming.addAll(serverCommServ.receiveMessages());
+	}
+	
 
 	@Override
 	public Message readMessage() {
