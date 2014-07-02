@@ -8,6 +8,7 @@ import ServerSystem.Interfaces.New.IServerCommunication;
 import de.hpi.sam.warehouse.*;
 import de.hpi.sam.warehouse.interfaces.IOrderManagement;
 import de.hpi.sam.warehouse.order.Order;
+import de.hpi.sam.warehouse.order.OrderManagement;
 import de.hpi.sam.warehouse.stock.CartPosition;
 import de.cpslab.robotino.*;
 import de.cpslab.robotino.actuator.communication.Message;
