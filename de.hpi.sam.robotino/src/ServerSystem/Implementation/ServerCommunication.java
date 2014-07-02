@@ -1,6 +1,7 @@
 package ServerSystem.Implementation;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Queue;
 
 import Datatypes.Added.StateType;
@@ -19,26 +20,77 @@ public class ServerCommunication implements  IServerCommunication {
 		
 	@Override
 	public StateType.robot requestRobotStatus(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_STATUS);
+		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_STATUS);
 		serverCommServ.sendMessage(robot, messToSend);
 		
-		// TODO wait for incoming message
-		return null;
-	}
-
-	@Override
-	public Date requestOrderTime(Order order) {
+		// It's assumed he sends a message with his status
+		StateType.robot answer = null;
+		while(answer == null) {
+			// Wait for message
+			List<Message> rec = serverCommServ.receiveMessages(robot);
+			if(rec.size() == 0) continue;
+			for (Message message : rec) {
+				// TODO test if working
+				StatusMessage statMes = (StatusMessage) message;
+				
+				if(statMes.getTypeOfMessage() == StateType.message.ROBOT_STATUS) 
+					answer = (Datatypes.Added.StateType.robot) statMes.getContent();
+				else
+					incoming.add(message);
+			}
+		}
 		
-		return null;
+		return answer;
 	}
 
 	@Override
-	public Position requestPosition(RobotinoID root) {
-		// TODO missing status for getting position
-		//	StatusMessage messToSend = new StatusMessage(MessageTypeof.t.);
-	//	serverCommServ.sendMessage(robot, messToSend);
-		// TODO wait for incoming message
-		return null;
+	public Date requestOrderTime(Order order, RobotinoID robot) {
+		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_ORDERTIME);
+		serverCommServ.sendMessage(robot, messToSend);
+		
+		// It's assumed he sends a message with his status
+		Date answer = null;
+		while(answer == null) {
+			// Wait for message
+			List<Message> rec = serverCommServ.receiveMessages(robot);
+			if(rec.size() == 0) continue;
+			for (Message message : rec) {
+				// TODO test if working
+				StatusMessage statMes = (StatusMessage) message;
+				
+				if(statMes.getTypeOfMessage() == StateType.message.ROBOT_ORDERTIME) 
+					answer = (Date) statMes.getContent();
+				else
+					incoming.add(message);
+			}
+		}
+		
+		return answer;
+	}
+
+	@Override
+	public Position requestPosition(RobotinoID robot) {
+		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_POSITION);
+		serverCommServ.sendMessage(robot, messToSend);
+		
+		// It's assumed he sends a message with his status
+		Position answer = null;
+		while(answer == null) {
+			// Wait for message
+			List<Message> rec = serverCommServ.receiveMessages(robot);
+			if(rec.size() == 0) continue;
+			for (Message message : rec) {
+				// TODO test if working
+				StatusMessage statMes = (StatusMessage) message;
+				
+				if(statMes.getTypeOfMessage() == StateType.message.ROBOT_POSITION) 
+					answer = (Position) statMes.getContent();
+				else
+					incoming.add(message);
+			}
+		}
+		
+		return answer;
 	}
 
 	@Override

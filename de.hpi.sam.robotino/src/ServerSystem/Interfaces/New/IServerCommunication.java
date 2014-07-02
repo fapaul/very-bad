@@ -12,9 +12,9 @@ public interface IServerCommunication {
 
 	StateType.robot requestRobotStatus(RobotinoID robot);
 	
-	Date requestOrderTime(Order order);
+	Date requestOrderTime(Order order, RobotinoID robot);
 	
-	Position requestPosition(RobotinoID root);
+	Position requestPosition(RobotinoID robot);
 	
 	void sendSleep(RobotinoID robot);
 	
