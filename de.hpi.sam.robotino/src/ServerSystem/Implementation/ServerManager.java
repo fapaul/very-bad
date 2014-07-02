@@ -13,16 +13,17 @@ import de.cpslab.robotino.*;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
 
-public class ServerManager implements IServerCommunication, IOrderManagement{
+public class ServerManager implements Runnable {
 
+	OrderManagement 	orderManager;
+	ServerCommunication serverComm;
+	
 	float energyConsumption;
 	RobotinoID[] robots;
 	Order[] pendingOrders;
 	Order[] inprogressOrders;
 	
-	void updateLoop() {
 	
-	}
 	
 	void handleMessage(Message message) {
 	
@@ -33,64 +34,19 @@ public class ServerManager implements IServerCommunication, IOrderManagement{
 		return null;
 	}
 
-	@Override
-	public List<Order> getOrderList() {
-		// TODO Auto-generated method stub
-		return null;
+	void updateLoop() {
+		 
 	}
-
+	
+	/*
+	 * Uses the function updateLoop 
+	 *  (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
-	public boolean finishOrder(Order order, CartPosition cartPosition) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public RobotStatusType requestRobotStatus(RobotinoID robot) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Date requestOrderTime(Order order) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Position requestPosition(RobotinoID root) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void sendSleep(RobotinoID robot) {
+	public void run() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void sendWakeup(RobotinoID robot) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void sendOrderStart(RobotinoID robot) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean hasMessage() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Message readMessage() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	

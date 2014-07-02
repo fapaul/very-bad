@@ -5,38 +5,97 @@ import java.util.Date;
 
 import RobotSystem.Interfaces.New.IDriveManager;
 import RobotSystem.Interfaces.New.IRobotExecute;
-import de.hpi.sam.warehouse.*;
-import de.hpi.sam.warehouse.order.Order;
-import de.cpslab.robotino.*;
-import de.cpslab.robotino.actuator.interfaces.IRobotinoWheels;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.WarehouseRobot;
+import de.hpi.sam.warehouse.order.Order;
+import de.hpi.sam.warehouse.order.OrderItem;
+import de.hpi.sam.warehouse.stock.Cart;
+import de.hpi.sam.warehouse.stock.IssuingPoint;
 
-public class DriveManager implements IRobotinoWheels, IRobotExecute, IDriveManager { // = IDrive
+public class DriveManager implements IRobotExecute, IDriveManager { // = IDrive
 
 	private boolean bumped;
+	private WarehouseRobot robot = null;
+	private Order curOrder = null;
+	private Cart curCart = null;
+	
+	public Order getCurOrder() {
+		return curOrder;
+	}
+
+	public void setCurOrder(Order curOrder) {
+		this.curOrder = curOrder;
+	}
+
+	public DriveManager(WarehouseRobot r) {
+		robot = r;
+	}
+	
+	public void drive(Position position) {
+		robot.driveToPosition(position);		
+	}
 
 	@Override
-	public void drive(Position position) {
-		// TODO Auto-generated method stub
-		
+	public void setSpeed(int speed) {
+		robot.setSpeed(speed);
 	}
 
 	@Override
 	public int getMaxSpeed() {
-		// TODO Auto-generated method stub
-		return 0;
+		return robot.MAX_MOVEMENT_SPEED;
 	}
 
 	@Override
 	public void orderStart() {
-		// TODO Auto-generated method stub
+		System.out.println("starting order");
+		// No order nothing to do //TODO an error message might be good
+		if(curOrder == null)
+			return;
+		// Getting to the cart area and the position of the first cart
+		robot.driveToPositionAvoidingObstacles(curOrder.getCartArea().getCartPositions().get(0));
+		if(isBumped()) {
+			System.out.println("Getting to cart area failed");
+			return;
+		}
 		
+		// Get the cart
+		curCart = robot.takeCart(curOrder.getCartArea().getCartPositions().get(0));
+		if(curCart == null) {
+			System.out.println("Error retrieving cart for CartArea");
+			return;
+		}
+		
+		for (OrderItem orderItem : curOrder.getOrderItems()) {
+			System.out.println("processing orderitem");
+			if( robot.getIssuingPoints(orderItem.getProductType()).size() < 1) {
+				System.out.println("Error: No issuings points for order item");
+				return;
+			}
+			// Find nearest issuing points 
+			
+			int robotX, robotZ;
+			robotX = robot.getCurrentPosition().getXPosition();
+			robotZ = robot.getCurrentPosition().getZPosition();
+			IssuingPoint nearest = robot.getIssuingPoints(orderItem.getProductType()).get(0);
+			for(IssuingPoint point : robot.getIssuingPoints(orderItem.getProductType())) {
+				if(point.getXPosition() - robotX + point.getZPosition() - robotZ  < nearest.getXPosition() - robotX + nearest.getZPosition() - robotZ) {
+					nearest = point;
+				}
+			}
+			
+			// Drive to issuingpoint and retrieve items
+			robot.driveToPositionAvoidingObstacles(nearest);
+			robot.load(orderItem.getQuantity(), nearest, curCart);
+		}
+		System.out.println("finished order");
+		// TODO for testing we return to the current cart area
+		robot.driveToPositionAvoidingObstacles(curOrder.getCartArea().getCartPositions().get(0));
+		curCart = null;
 	}
 
 	@Override
 	public boolean orderDone() {
-		// TODO Auto-generated method stub
-		return false;
+		return curCart != null;
 	}
 
 	@Override
@@ -77,124 +136,6 @@ public class DriveManager implements IRobotinoWheels, IRobotExecute, IDriveManag
 
 	@Override
 	public boolean isBumped() {
-		// TODO Auto-generated method stub
-		return false;
+		return bumped;
 	}
-
-	@Override
-	public void drive(int forwardSpeed, int sideSpeed, int rotate) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void driveForward() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void driveForward(int speed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void driveBackward() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void driveBackward(int speed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void driveRight() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void driveRight(int speed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void driveLeft() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void driveLeft(int speed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void turnRight() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void turnLeft() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setSpeed(int speed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void accelerate(int speed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void decelerate(int speed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void brake() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void turnRightAt(int degree) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void turnLeftAt(int degree) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean driveToPosition(Position pos) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean driveToPositionAvoidingObstacles(Position pos) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	
-
 }
