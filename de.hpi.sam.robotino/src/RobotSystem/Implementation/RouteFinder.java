@@ -21,6 +21,7 @@ import de.hpi.sam.warehouse.stock.StockroomID;
 import de.cpslab.robotino.*;
 import de.cpslab.robotino.environment.Position;
 import de.cpslab.robotino.sensor.interfaces.INorthStar;
+import de.hpi.sam.warehouse.environment.*;
 
 public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 	
@@ -28,7 +29,21 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 	private Position destinationPosition;
 	
 	private List<Route> calculateSubRoute(RoomPoint from, RoomPoint to) {
-	
+		
+		StockroomID start = from.getRoom();
+		StockroomID end = to.getRoom();
+		List<Path> paths = computePaths(start, end);
+		for (Path i : paths) {
+			List<Route> routes = new ArrayList<Route>();
+			for (Route r : routes) {
+				r.add(from);
+			}
+			List<PathElement> pe = new ArrayList<PathElement>();
+			pe = i.getPathElements();
+			for (PathElement m : pe) {
+				routes.add();
+			}
+		}
 		return null;
 	}
 	
@@ -56,7 +71,6 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 	}*/
 	
 	public List<Route> calculateCartAreaRoutes(Position from) {
-		//Route[] calculateCartAreaRoutes(Position from) {
 			
 			StockroomID currentStockroom = getRoomFor(from);				// jetzigen Stockroom bestimmen
 			List<CartArea> cartAreas =  getCartAreas();
@@ -67,13 +81,13 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 				allCartPositions.add(temp.get(0));	// nur erste CartPosition in jeder CartArea betrachten
 			}
 			//List<StockroomID> stockrooms = new ArrayList<StockroomID>();	// Stockrooms für CartAreas mit ihrer CartPosition
-			List<Route> tempP = new ArrayList<Route>();
+			List<Path> tempP = new ArrayList<Path>();
 			List<Integer> tempP2 = new ArrayList<Integer>();
 			List<Route> paths = new ArrayList<Route>();
 			for (CartPosition i : allCartPositions) {
 				// if CART ?
 				StockroomID sID = getRoomFor(i);		//Stockroom für jede CartArea holen
-				
+				//currentStockroom.
 				tempP = computePaths(currentStockroom, sID);	// alle Wege zu einem Stockroom
 				for (Path p : tempP) {		// kürzesten Weg/Path zu einem Stockroom wählen, entspricht hier Anzahl der am geringsten zu durchfahrenen PathElements
 					tempP2.add(p.getPathElements().size());
@@ -84,8 +98,9 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 							min = tempP2.get(m);
 							minIndex = m;
 						}
-					}												// TODO: weg von tür zur cartarea hinzufügen
-					paths.add(tempP.get(minIndex));
+					}																	// TODO: weg von tür zur cartarea hinzufügen
+					//tempP.get(minIndex).getPathElements()														
+					paths.add(tempP.get(minIndex));			
 					paths.add(allCartPositions.get(minIndex));
 				}
 				//List<Path> f = tempP.get(tempP.size()-1);
@@ -98,7 +113,6 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 		}
 		
 		public List<Route> calculateCartAreaRoutes(Position from, Order order) {
-			// Route[] calculateCartAreaRoutes(Position from, Order order)
 			
 			StockroomID currentStockroom = getRoomFor(from);
 			List<CartPosition> temp = new ArrayList<CartPosition>();
@@ -122,7 +136,6 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 		}
 		
 		public List<Route> calculateIssuingPointsRoutes(Position from, Order order) {
-		//Route[] calculateIssuingPointsRoutes(Position from, Order order);
 			/*
 			 * ordergetCartArea
 			 * CartArea.getCartPosition(0)
@@ -216,11 +229,11 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public List<Path> computePaths(StockroomID roomSrc, StockroomID roomDst) {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	}*/
 
 	@Override
 	public StockroomID getRoomFor(Position position) {
