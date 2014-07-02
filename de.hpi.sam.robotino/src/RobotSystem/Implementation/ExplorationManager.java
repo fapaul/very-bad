@@ -2,6 +2,7 @@ package RobotSystem.Implementation;
 
 //import RobotExecute.RobotExecute.*;
 import java.util.Date;
+import java.util.List;
 
 import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IExplorationManager;
@@ -45,19 +46,19 @@ public class ExplorationManager implements IRobotExecute, IWarehouseEnvironment,
 	}
 
 	@Override
-	public Route[] calculateCartAreaRoutes(Position from) {
+	public List<Route> calculateCartAreaRoutes(Position from) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Route[] calculateCartAreaRoutes(Position from, Order order) {
+	public List<Route> calculateCartAreaRoutes(Position from, Order order) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Route[] calculateIssuingPointsRoutes(Position from, Order order) {
+	public List<Route> calculateIssuingPointsRoutes(Position from, Order order) {
 		// TODO Auto-generated method stub
 		return null;
 	}
