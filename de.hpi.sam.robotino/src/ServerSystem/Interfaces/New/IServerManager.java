@@ -1,5 +1,9 @@
+package ServerSystem.Interfaces.New;
+
 import de.hpi.sam.warehouse.*;
+import de.hpi.sam.warehouse.order.Order;
 import de.cpslab.robotino.*;
+import de.cpslab.robotino.environment.Position;
 
 public interface IServerManager  {
 

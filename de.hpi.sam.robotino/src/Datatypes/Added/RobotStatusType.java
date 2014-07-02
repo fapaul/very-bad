@@ -1,3 +1,5 @@
+package Datatypes.Added;
+
 import de.hpi.sam.warehouse.*;
 import de.cpslab.robotino.*;
 

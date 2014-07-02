@@ -8,4 +8,5 @@ Thumbs.db
 Desktop.ini
 
 # Project
-/simulator
+/simulator/
+/de.hpi.sam.robotino/bin/
