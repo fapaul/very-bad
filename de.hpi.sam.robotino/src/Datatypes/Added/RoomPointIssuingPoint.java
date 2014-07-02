@@ -17,9 +17,10 @@ public class RoomPointIssuingPoint extends RoomPoint{
 	public int getItemsToTake() {
 		return itemsToTake;
 	}
-	public Cart interact(Cart cart){
-		
-		
-		return null;
+	
+	@Override
+	Cart interact(Cart cart, WarehouseRobot robot) {
+		return cart;
 	}
+
 }

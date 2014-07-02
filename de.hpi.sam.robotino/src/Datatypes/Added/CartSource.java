@@ -21,7 +21,8 @@ public class CartSource extends RoomPointCartArea {
 		this.room = warehouseRobot.getRoomFor(location);
 	}
 	
-	public Cart interact(Cart cart){
+	@Override
+	public Cart interact(Cart cart,  WarehouseRobot robot){
 		if (carts.size() < 1)
 			return null;
 		CartPosition cartPosition = carts.get(0);

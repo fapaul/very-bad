@@ -3,6 +3,8 @@ package Datatypes.Added;
 import java.util.List;
 
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.WarehouseRobot;
+import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.CartPosition;
 import de.hpi.sam.warehouse.stock.CartArea;
 

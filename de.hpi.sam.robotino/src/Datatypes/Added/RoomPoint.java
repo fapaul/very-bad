@@ -1,5 +1,6 @@
 package Datatypes.Added;
 
+import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.StockroomID;
 import de.cpslab.robotino.environment.Position;
@@ -10,6 +11,11 @@ public class RoomPoint {
 	protected StockroomID room;
 	
 	Cart interact(Cart cart) {
+		return interact(cart, null);
+	}
+
+	
+	Cart interact(Cart cart, WarehouseRobot robot) {
 		return cart;
 	}
 
