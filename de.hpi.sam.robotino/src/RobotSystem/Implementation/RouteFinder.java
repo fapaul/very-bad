@@ -6,8 +6,10 @@ import java.util.List;
 import Datatypes.Added.RoomPoint;
 import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IRouteFinder;
-import de.hpi.sam.warehouse.*;
+import de.cpslab.robotino.environment.Position;
+import de.cpslab.robotino.sensor.interfaces.INorthStar;
 import de.hpi.sam.warehouse.environment.Path;
+import de.hpi.sam.warehouse.environment.PathElement;
 import de.hpi.sam.warehouse.interfaces.IStockroom;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.order.ProductType;
@@ -18,10 +20,6 @@ import de.hpi.sam.warehouse.stock.Door;
 import de.hpi.sam.warehouse.stock.IssuingPoint;
 import de.hpi.sam.warehouse.stock.Stockroom;
 import de.hpi.sam.warehouse.stock.StockroomID;
-import de.cpslab.robotino.*;
-import de.cpslab.robotino.environment.Position;
-import de.cpslab.robotino.sensor.interfaces.INorthStar;
-import de.hpi.sam.warehouse.environment.*;
 
 public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 	
@@ -124,8 +122,8 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 			CartArea cartArea = order.getCartArea();
 			temp = cartArea.getCartPositions();		// von aktueller CartArea all ihre CartPositions
 			allCartPositions.add(temp.get(0)); // nur erste CartPosition in CartArea betrachten
-			StockroomID sID = getRoomFor(allCartPositions);
-			tempP = computePaths(currentStockroom, sID);	// alle Wege zum Stockroom
+			StockroomID sID = getRoomFor(temp.get(arg0));
+			//tempP = computePaths(currentStockroom, sID);	// alle Wege zum Stockroom
 			tempP.add(allCartPositions);
 			//tempP.add(computePaths(currentStockroom, sID));	
 			

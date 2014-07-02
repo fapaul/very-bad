@@ -1,93 +1,76 @@
 package ServerSystem.Implementation;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Queue;
 
+import Datatypes.Added.MessageTypeof;
 import Datatypes.Added.RobotStatusType;
+import Datatypes.Added.StatusMessage;
 import ServerSystem.Interfaces.New.IServerCommunication;
-import de.hpi.sam.warehouse.*;
-import de.hpi.sam.warehouse.order.Order;
-import de.cpslab.robotino.*;
-import de.cpslab.robotino.actuator.communication.CommunicationID;
+import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.Message;
-import de.cpslab.robotino.actuator.interfaces.IWLanAdapter;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.communication.WarehouseCommunicationServer;
+import de.hpi.sam.warehouse.order.Order;
 
-public class ServerCommunication implements IServerCommunication, IWLanAdapter {
+public class ServerCommunication implements  IServerCommunication {
 
 	private Queue<Message> incoming; // = new LinkedList..
-
-	@Override
-	public boolean register() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public List<CommunicationID> scanForCommunicationPartnerInRange() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean sendMessage(CommunicationID receiver, Message message) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public List<Message> receiveMessages() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	private WarehouseCommunicationServer serverCommServ; 
+		
 	@Override
 	public RobotStatusType requestRobotStatus(RobotinoID robot) {
-		// TODO Auto-generated method stub
+		StatusMessage messToSend = new StatusMessage(MessageTypeof.t.ROBOT_STATUS);
+		serverCommServ.sendMessage(robot, messToSend);
+		
+		// TODO wait for incoming message
 		return null;
 	}
 
 	@Override
 	public Date requestOrderTime(Order order) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public Position requestPosition(RobotinoID root) {
-		// TODO Auto-generated method stub
+		// TODO missing status for getting position
+		//	StatusMessage messToSend = new StatusMessage(MessageTypeof.t.);
+	//	serverCommServ.sendMessage(robot, messToSend);
+		// TODO wait for incoming message
 		return null;
 	}
 
 	@Override
 	public void sendSleep(RobotinoID robot) {
-		// TODO Auto-generated method stub
-		
+		StatusMessage messToSend = new StatusMessage(MessageTypeof.t.SERVER_SLEEP);
+		serverCommServ.sendMessage(robot, messToSend);
 	}
 
 	@Override
 	public void sendWakeup(RobotinoID robot) {
-		// TODO Auto-generated method stub
-		
+		StatusMessage messToSend = new StatusMessage(MessageTypeof.t.SERVER_WAKEUP);
+		serverCommServ.sendMessage(robot, messToSend);
 	}
 
 	@Override
 	public void sendOrderStart(RobotinoID robot) {
-		// TODO Auto-generated method stub
-		
+		StatusMessage messToSend = new StatusMessage(MessageTypeof.t.SERVER_ORDER);
+		// TODO add order message 
+		serverCommServ.sendMessage(robot, messToSend);
 	}
 
 	@Override
 	public boolean hasMessage() {
-		// TODO Auto-generated method stub
-		return false;
+		int oldLength = incoming.size();
+		incoming.addAll(serverCommServ.receiveMessages());
+		return oldLength < incoming.size();
 	}
 
 	@Override
 	public Message readMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		return incoming.poll();
 	}
 	
 
