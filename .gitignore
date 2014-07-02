@@ -1,0 +1,11 @@
+# Executables
+*.jar
+*.exe
+*.dll
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Project
+/simulator
