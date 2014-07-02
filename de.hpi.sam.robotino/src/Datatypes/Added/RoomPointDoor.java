@@ -3,7 +3,7 @@ package Datatypes.Added;
 import de.hpi.sam.warehouse.*;
 import de.cpslab.robotino.*;
 
-public class Door extends RoomPoint {
-
-
+public class RoomPointDoor extends RoomPoint {
+	
+	
 }
