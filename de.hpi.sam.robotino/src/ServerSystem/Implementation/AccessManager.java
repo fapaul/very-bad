@@ -1,12 +1,11 @@
 package ServerSystem.Implementation;
 
-import Datatypes.Added.RobotStatusType;
+import Datatypes.Added.StateType;
 import ServerSystem.Interfaces.New.IAdminControl;
 import ServerSystem.Interfaces.New.IOrderAccess;
-import de.hpi.sam.warehouse.*;
-import de.hpi.sam.warehouse.order.Order;
-import de.cpslab.robotino.*;
+import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.order.Order;
 
 public class AccessManager implements IOrderAccess, IAdminControl{
 
@@ -47,13 +46,13 @@ public class AccessManager implements IOrderAccess, IAdminControl{
 	}
 
 	@Override
-	public RobotinoID[] getRobots(RobotStatusType status) {
+	public RobotinoID[] getRobots(StateType.robot status) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public RobotStatusType getRobotStatus(RobotinoID robot) {
+	public StateType.robot getRobotStatus(RobotinoID robot) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -2,12 +2,10 @@ package RobotSystem.Interfaces.New;
 
 import java.util.Date;
 
-import Datatypes.Added.RobotStatusType;
-import de.hpi.sam.warehouse.*;
-import de.hpi.sam.warehouse.order.Order;
-import de.cpslab.robotino.*;
+import Datatypes.Added.StateType;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.order.Order;
 
 public interface IRobotCommunication {
 
@@ -15,7 +13,7 @@ public interface IRobotCommunication {
 	
 	Message readMessage(); //check Message-Type if ok or replace
 	
-	void sendRobotStatus(RobotStatusType status);
+	void sendRobotStatus(StateType.robot status);
 	
 	void sendOrderTime(Date duration);
 	

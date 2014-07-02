@@ -3,8 +3,7 @@ package ServerSystem.Implementation;
 import java.util.Date;
 import java.util.Queue;
 
-import Datatypes.Added.MessageTypeof;
-import Datatypes.Added.RobotStatusType;
+import Datatypes.Added.StateType;
 import Datatypes.Added.StatusMessage;
 import ServerSystem.Interfaces.New.IServerCommunication;
 import de.cpslab.robotino.RobotinoID;
@@ -19,8 +18,8 @@ public class ServerCommunication implements  IServerCommunication {
 	private WarehouseCommunicationServer serverCommServ; 
 		
 	@Override
-	public RobotStatusType requestRobotStatus(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(MessageTypeof.t.ROBOT_STATUS);
+	public StateType.robot requestRobotStatus(RobotinoID robot) {
+		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_STATUS);
 		serverCommServ.sendMessage(robot, messToSend);
 		
 		// TODO wait for incoming message
@@ -44,19 +43,19 @@ public class ServerCommunication implements  IServerCommunication {
 
 	@Override
 	public void sendSleep(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(MessageTypeof.t.SERVER_SLEEP);
+		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_SLEEP);
 		serverCommServ.sendMessage(robot, messToSend);
 	}
 
 	@Override
 	public void sendWakeup(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(MessageTypeof.t.SERVER_WAKEUP);
+		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_WAKEUP);
 		serverCommServ.sendMessage(robot, messToSend);
 	}
 
 	@Override
 	public void sendOrderStart(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(MessageTypeof.t.SERVER_ORDER);
+		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_ORDER);
 		// TODO add order message 
 		serverCommServ.sendMessage(robot, messToSend);
 	}

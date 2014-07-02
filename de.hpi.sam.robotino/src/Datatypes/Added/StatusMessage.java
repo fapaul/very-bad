@@ -8,26 +8,26 @@ import de.cpslab.robotino.actuator.communication.Message;
 public class StatusMessage extends Message {
 	
 	Object content;
-	MessageTypeof.t typeOfMessage;
+	StateType.message typeOfMessage;
 	
-	public StatusMessage(MessageTypeof.t type) {
+	public StatusMessage(StateType.message type) {
 		super();
 		typeOfMessage = type;
 		content = null;
 	}
 	
-	public StatusMessage(MessageTypeof.t type, Object con) {
+	public StatusMessage(StateType.message type, Object con) {
 		super();
 		typeOfMessage = type;
 		content = con;
 	}
 	
 	// Set and get the type of a message
-	public MessageTypeof.t getTypeOfMessage() {
+	public StateType.message getTypeOfMessage() {
 		return typeOfMessage;
 	}
 
-	public void setTypeOfMessage(MessageTypeof.t typeOfMessage) {
+	public void setTypeOfMessage(StateType.message typeOfMessage) {
 		this.typeOfMessage = typeOfMessage;
 	}
 

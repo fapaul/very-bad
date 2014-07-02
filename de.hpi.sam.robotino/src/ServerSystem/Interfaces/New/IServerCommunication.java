@@ -2,16 +2,15 @@ package ServerSystem.Interfaces.New;
 
 import java.util.Date;
 
-import Datatypes.Added.RobotStatusType;
-import de.hpi.sam.warehouse.*;
-import de.hpi.sam.warehouse.order.Order;
-import de.cpslab.robotino.*;
+import Datatypes.Added.StateType;
+import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.order.Order;
 
 public interface IServerCommunication {
 
-	RobotStatusType requestRobotStatus(RobotinoID robot);
+	StateType.robot requestRobotStatus(RobotinoID robot);
 	
 	Date requestOrderTime(Order order);
 	

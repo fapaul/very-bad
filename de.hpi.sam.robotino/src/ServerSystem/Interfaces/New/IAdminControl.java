@@ -1,8 +1,7 @@
 package ServerSystem.Interfaces.New;
 
-import Datatypes.Added.RobotStatusType;
-import de.hpi.sam.warehouse.*;
-import de.cpslab.robotino.*;
+import Datatypes.Added.StateType;
+import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.environment.Position;
 
 public interface IAdminControl {
@@ -19,9 +18,9 @@ public interface IAdminControl {
 	
 	RobotinoID[] getRobots();
 	
-	RobotinoID[] getRobots(RobotStatusType status);
+	RobotinoID[] getRobots(StateType.robot status);
 	
-	RobotStatusType getRobotStatus(RobotinoID robot);
+	StateType.robot getRobotStatus(RobotinoID robot);
 	
 	Position getRobotPosition(RobotinoID robot);
 

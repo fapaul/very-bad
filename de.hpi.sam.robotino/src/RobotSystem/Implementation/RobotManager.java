@@ -2,22 +2,21 @@ package RobotSystem.Implementation;
 
 import java.util.Date;
 
-import Datatypes.Added.RobotStatusType;
+import Datatypes.Added.StateType;
 import RobotSystem.Interfaces.New.IRobotCommunication;
 import RobotSystem.Interfaces.New.IRobotExecute;
-import de.hpi.sam.warehouse.*;
-import de.hpi.sam.warehouse.order.Order;
-import de.cpslab.robotino.*;
+import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
 import de.cpslab.robotino.sensor.interfaces.IBattery;
 import de.cpslab.robotino.sensor.interfaces.INorthStar;
+import de.hpi.sam.warehouse.order.Order;
 
 public class RobotManager implements IRobotCommunication, IBattery, INorthStar, IRobotExecute/*RobotStatusType*/{
 
 	private int BATTERYTHRESHOLD;
 	private RobotinoID id;
-	private RobotStatusType status;
+	private StateType.robot status;
 	private Order currentOrder;
 	private Position curentPos;
 	
@@ -29,12 +28,12 @@ public class RobotManager implements IRobotCommunication, IBattery, INorthStar, 
 	
 	}
 	
-	private RobotStatusType getStatus() {
+	private StateType.robot getStatus() {
 	
 		return null;
 	}
 	
-	private void setStatus(RobotStatusType status) {
+	private void setStatus(StateType.robot status) {
 	
 	}
 
@@ -123,7 +122,7 @@ public class RobotManager implements IRobotCommunication, IBattery, INorthStar, 
 	}
 
 	@Override
-	public void sendRobotStatus(RobotStatusType status) {
+	public void sendRobotStatus(StateType.robot status) {
 		// TODO Auto-generated method stub
 		
 	}

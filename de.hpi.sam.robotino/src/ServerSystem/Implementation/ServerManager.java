@@ -3,7 +3,6 @@ package ServerSystem.Implementation;
 import java.util.Date;
 import java.util.List;
 
-import Datatypes.Added.RobotStatusType;
 import ServerSystem.Interfaces.New.IServerCommunication;
 import de.hpi.sam.warehouse.*;
 import de.hpi.sam.warehouse.interfaces.IOrderManagement;

@@ -4,16 +4,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
-import Datatypes.Added.RobotStatusType;
+import Datatypes.Added.StateType;
 import RobotSystem.Interfaces.New.IRobotCommunication;
-import de.hpi.sam.warehouse.*;
-import de.hpi.sam.warehouse.order.Order;
-import de.hpi.sam.warehouse.stock.StockroomID;
-import de.cpslab.robotino.*;
+import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.CommunicationID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.actuator.interfaces.IWLanAdapter;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.order.Order;
+import de.hpi.sam.warehouse.stock.StockroomID;
 
 public class RobotCommunication implements IWLanAdapter, IRobotCommunication {
 
@@ -41,7 +40,7 @@ public class RobotCommunication implements IWLanAdapter, IRobotCommunication {
 	}
 
 	@Override
-	public void sendRobotStatus(RobotStatusType status) {
+	public void sendRobotStatus(StateType.robot status) {
 		// TODO Auto-generated method stub
 		
 	}
