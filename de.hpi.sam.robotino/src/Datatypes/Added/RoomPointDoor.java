@@ -4,11 +4,9 @@ import de.hpi.sam.warehouse.stock.Door;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
 public class RoomPointDoor extends RoomPoint {
-	private WarehouseRepresentation rep;
+	private WarehouseRepresentation rep = new WarehouseRepresentation();
 	
 	public RoomPointDoor(Door door) {
-		super();
-		this.location = door.getPosition();
-		this.room = rep.getRoomFor(door.getPosition());
+		super(door.getPosition());
 	}	
 }

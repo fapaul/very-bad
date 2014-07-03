@@ -7,6 +7,7 @@ import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.CartPosition;
 import de.hpi.sam.warehouse.stock.CartArea;
+import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
 public class RoomPointCartArea extends RoomPoint {
 	/**
@@ -31,7 +32,7 @@ public class RoomPointCartArea extends RoomPoint {
 	 */
 	public RoomPointCartArea(CartArea cartArea)
 	{
+		super(cartArea.getCartPositions().get(0));
 		carts = cartArea.getCartPositions();
-		location = (Position)carts.get(0);
 	}
 }

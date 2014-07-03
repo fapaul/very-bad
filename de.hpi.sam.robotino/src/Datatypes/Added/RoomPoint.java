@@ -12,25 +12,23 @@ public class RoomPoint {
 	protected Position location;
 	protected StockroomID room;
 	
+	public RoomPoint(Position location) {
+		WarehouseRepresentation warehouseRep = new WarehouseRepresentation();
+		this.location = location;
+		this.room = warehouseRep.getRoomFor(location);
+		System.out.println("testet " + (this.room==null) + "\t" + location.getXPosition());
+	}
+	
 	public RoomPoint(Position location, StockroomID room) {
 		this.location = location;
 		this.room = room;
 	}
 	
-	public RoomPoint(Position location) {
-		WarehouseRepresentation warehouseRep = new WarehouseRepresentation();
-		this.location = location;
-		this.room = warehouseRep.getRoomFor(location);
-	}
 	
 	public RoomPoint(int positionX, int positionZ) {
 		WarehouseRepresentation warehouseRep = new WarehouseRepresentation();
 		this.location = new Position(positionX, positionZ);
 		this.room = warehouseRep.getRoomFor(location);
-	}
-	
-	public RoomPoint() {
-		// TODO Auto-generated constructor stub
 	}	
 	
 	Cart interact(Cart cart) {
@@ -47,7 +45,7 @@ public class RoomPoint {
 	}
 
 	public StockroomID getRoom() {
-		return room;
+		return this.room;
 	}
 
 	public void setLocation(Position location) {
