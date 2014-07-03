@@ -4,10 +4,12 @@ package RobotSystem.Implementation;
 import java.util.Date;
 import java.util.List;
 
+import Datatypes.Added.RoomPoint;
 import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IExplorationManager;
 import RobotSystem.Interfaces.New.IRouteFinder;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.environment.IWarehouseEnvironment;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.stock.Stockroom;
@@ -21,11 +23,18 @@ public class ExplorationManager implements IRouteFinder, IExplorationManager {
 	private Route currentRoute;
 	private WarehouseRepresentation representation;
 	private RouteFinder rf = new RouteFinder();
+	private DriveManager dm;
+	private WarehouseRobot robot;
+	
+	public ExplorationManager(WarehouseRobot robot) {
+		this.robot = robot;
+		dm = new DriveManager(robot);
+	}
 	
 	@Override
 	public Date calculateExplorationTime(StockroomID room) {
 		// TODO assumption: distance in mm
-		int distance = rf.getDistance(rf.calculateExplorationRoute(rf.getPosition(), room));
+		int distance = rf.getDistance(rf.calculateExplorationRoute(getPosition(), room));
 		
 		// time in milli seconds
 		int time = distance/IWarehouseEnvironment.SAFETY_SPEED * 1000;
@@ -35,7 +44,13 @@ public class ExplorationManager implements IRouteFinder, IExplorationManager {
 	}
 	@Override
 	public void explorationStart(StockroomID room) {
-		// TODO Auto-generated method stub
+		Route route = rf.calculateExplorationRoute(getPosition(), room);
+		List<RoomPoint> rp = route.getRoomPoints();
+		
+		for (RoomPoint r : rp) {
+			dm.drive(r.getLocation());
+		}
+		
 	}
 	@Override
 	public boolean isExplored(StockroomID room) {

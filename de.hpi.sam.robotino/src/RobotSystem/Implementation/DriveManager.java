@@ -32,7 +32,7 @@ public class DriveManager implements IRobotExecute, IDriveManager { // = IDrive
 	}
 	
 	public void drive(Position position) {
-		robot.driveToPosition(position);		
+		robot.driveToPositionAvoidingObstacles(position);		
 	}
 
 	@Override
