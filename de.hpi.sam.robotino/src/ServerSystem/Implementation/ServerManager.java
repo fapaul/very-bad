@@ -56,21 +56,15 @@ public class ServerManager extends Thread {
 		StatusMessage servMess = (StatusMessage) message;
 		
 		switch (servMess.getTypeOfMessage()) {
-		case ROBOT_STATUS:
-			robotState = (StateType.robot)servMess.getContent();
+		case ROBOT_FINISH:
+			//finalize order progressing
+			Order curOrder = (Order)servMess.getContent();
+			inprogressOrders.remove(curOrder);
 			break;
-		case ROBOT_POSITION:
-			robotPos = (Position)servMess.getContent();
-			break;
-		case ROBOT_ORDERTIME:
-			orderTime = (Date)servMess.getContent();
-			break;
-		/*case ROBOT_FINISH:
-			
-			break;
+
 		case ROBOT_CHARGING:
-			
-			break;*/
+//			//TODO perhaps remove ROBOT_CHARGING
+			break;
 		case SERVER_WAKEUP:
 			startServer();
 			break;
@@ -82,7 +76,7 @@ public class ServerManager extends Thread {
 		}
 	}
 	
-	RobotinoID chooseRobot(Order order) {
+	private RobotinoID chooseRobot(Order order) {
 		Map<RobotinoID, Date> times = new HashMap<RobotinoID, Date>();
 		
 		for (RobotinoID robot : robots) {
@@ -91,7 +85,7 @@ public class ServerManager extends Thread {
 			times.put(robot, serverComm.requestOrderTime(order, robot));
 		}
 		
-		// Get robot with best tiem
+		// Get robot with best time
 		RobotinoID best = null;
 		for(Entry<RobotinoID, Date> entry : times.entrySet()) {
 			if(best == null)
@@ -104,7 +98,7 @@ public class ServerManager extends Thread {
 	}
 	
 	void fetchOrders() {
-		// If a order is not inprogress it must be pending
+		// If a order is not in progress it must be pending
 		for(Order order : orderManager.getOrderList()) {
 			if(!inprogressOrders.contains(order))
 				pendingOrders.add(order);

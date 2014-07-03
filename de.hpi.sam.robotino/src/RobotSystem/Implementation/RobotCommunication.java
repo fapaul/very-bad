@@ -5,91 +5,98 @@ import java.util.List;
 import java.util.Queue;
 
 import Datatypes.Added.StateType;
+import Datatypes.Added.StatusMessage;
 import RobotSystem.Interfaces.New.IRobotCommunication;
 import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.CommunicationID;
 import de.cpslab.robotino.actuator.communication.Message;
+import de.cpslab.robotino.actuator.communication.RobotinoWLanAdapter;
 import de.cpslab.robotino.actuator.interfaces.IWLanAdapter;
 import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.stock.StockroomID;
 
-public class RobotCommunication implements IWLanAdapter, IRobotCommunication {
+public class RobotCommunication implements IRobotCommunication {
 
 	private float WLANTHRESHOLD;
 	private CommunicationID server;
 	private RobotinoID robot;
 	private Queue<Message> incoming;		// = new LinkedList<Message>;
-	private StockroomID[] stockrooms;
-	private RobotinoID[] communicationPartners;
+	private List<StockroomID> stockrooms;
+	private List <RobotinoID> communicationPartners;
+	private RobotinoWLanAdapter robotComm;
 	
-	void exchangeInformation() {
+	
+	public void exchangeInformation() {
+		List<CommunicationID> communicationPartnerIPs = robotComm.scanForCommunicationPartnerInRange();
+		for (CommunicationID robot : communicationPartnerIPs){
+			communicationPartners.add(new RobotinoID(robot.getName()));
+			
+			
+		}
 	
 	}
 
 	@Override
 	public boolean hasMessage() {
-		// TODO Auto-generated method stub
-		return false;
+		fetchMessage();
+		return incoming.size() > 0;
 	}
 
 	@Override
 	public Message readMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		return incoming.poll();
 	}
 
 	@Override
 	public void sendRobotStatus(StateType.robot status) {
-		// TODO Auto-generated method stub
+		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_STATUS);
+		robotComm.sendMessage(server, messToSend);
 		
 	}
 
 	@Override
 	public void sendOrderTime(Date duration) {
-		// TODO Auto-generated method stub
+		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_ORDERTIME);
+		robotComm.sendMessage(server, messToSend);
 		
 	}
 
 	@Override
 	public void sendPosition(Position position) {
-		// TODO Auto-generated method stub
-		
+		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_POSITION);
+		robotComm.sendMessage(server, messToSend);
 	}
 
 	@Override
 	public void sendOrderFinish(Order order) {
-		// TODO Auto-generated method stub
-		
+		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_FINISH);
+		robotComm.sendMessage(server, messToSend);
 	}
 
 	@Override
 	public float getWorkload() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	@Override
-	public boolean register() {
-		// TODO Auto-generated method stub
-		return false;
+	
+	public void fetchMessage(){
+		incoming.addAll(robotComm.receiveMessages());
 	}
 
 	@Override
-	public List<CommunicationID> scanForCommunicationPartnerInRange() {
-		// TODO Auto-generated method stub
-		return null;
+	public void requestForRobots() {
+		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_REQUEST);
+		robotComm.sendMessage(server, messToSend);
+		
+		List<RobotinoID> robots = null;
+		while(robots == null){
+			//Wait for message
+			List<Message> rec = robotComm.receiveMessages();
+			
+			
+		}
+		
 	}
+	
 
-	@Override
-	public boolean sendMessage(CommunicationID receiver, Message message) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public List<Message> receiveMessages() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

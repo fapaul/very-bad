@@ -34,7 +34,7 @@ public class ServerCommunication implements  IServerCommunication {
 				StatusMessage statMes = (StatusMessage) message;
 				
 				if(statMes.getTypeOfMessage() == StateType.message.ROBOT_STATUS) 
-					answer = (Datatypes.Added.StateType.robot) statMes.getContent();
+					answer = (StateType.robot) statMes.getContent();
 				else
 					incoming.add(message);
 			}

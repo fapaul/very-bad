@@ -22,5 +22,7 @@ public interface IRobotCommunication {
 	void sendOrderFinish(Order order);
 	
 	float getWorkload();
+	
+	void requestForRobots();
 
 }
