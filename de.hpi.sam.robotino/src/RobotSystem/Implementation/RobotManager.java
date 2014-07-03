@@ -1,3 +1,4 @@
+
 package RobotSystem.Implementation;
 
 import java.util.Date;
@@ -150,4 +151,6 @@ public class RobotManager implements IRobotCommunication, IBattery, INorthStar, 
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+
 }
