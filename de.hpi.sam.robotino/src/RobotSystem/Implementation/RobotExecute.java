@@ -35,7 +35,7 @@ public class RobotExecute implements IRobotExecute{
 		cm = new ChargingManager();
 		em = new ExplorationManager(r, wr);
 		om = new OrderManager(r,  wr);
-		rm = new RobotManager();
+		rm = new RobotManager(r);
 	}
 
 
