@@ -70,7 +70,6 @@ public class ServerManager extends Thread {
 			startServer();
 			break;
 		case SERVER_SLEEP:
-			startServer();
 			break;
 		default:
 			break;
@@ -129,7 +128,7 @@ public class ServerManager extends Thread {
 	 */
 	@Override
 	public void run() {
-		// Calls the update loop and idles the thread for a wile
+		// Calls the update loop and idles the thread for a while
 		
 		while(running) {
 			updateLoop();

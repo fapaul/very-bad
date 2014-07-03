@@ -4,135 +4,99 @@ package RobotSystem.Implementation;
 import java.util.Date;
 
 import Datatypes.Added.StateType;
-import RobotSystem.Interfaces.New.IRobotCommunication;
-import RobotSystem.Interfaces.New.IRobotExecute;
+import Datatypes.Added.StateType.robot;
+import Datatypes.Added.StatusMessage;
 import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
-import de.cpslab.robotino.sensor.interfaces.IBattery;
-import de.cpslab.robotino.sensor.interfaces.INorthStar;
+import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.order.Order;
+import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
-public class RobotManager implements IRobotCommunication, IRobotExecute {
+public class RobotManager extends Thread{
 
 	private int BATTERYTHRESHOLD;
 	private RobotinoID id;
-	private StateType.robot status;
 	private Order currentOrder;
 	private Position curentPos;
+	private OrderManager orderManager;
+	private ExplorationManager explorationManager;
+	private	ChargingManager chargingManager;
+	private RobotCommunication robComm;
+	private WarehouseRobot wareRobot;
+	private WarehouseRepresentation resp;
+	private StateType.robot status;
+	int MAX_MESSAGE_ONCE = 20;
+	int MAX_ORDER_ONCE = 20;
+	
+	boolean running = false;
+	
+	public RobotManager(WarehouseRobot warehouseRobot){
+		status = robot.IDLE;
+		wareRobot = warehouseRobot;
+		resp = new WarehouseRepresentation();
+		
+	}
+	
+	public boolean isRunning(){
+		return running;
+	}
+	
+	public void startRobot(){
+		running = true;
+		this.start();
+	}
 	
 	private void updateLoop() {
-	
+		
+		for (int i = 0; i < MAX_MESSAGE_ONCE && robComm.hasMessage();i++){
+			handleMessage(robComm.readMessage());
+		}
+		
 	}
 	
 	private void handleMessage(Message message) {
-	
+		StatusMessage robMess = (StatusMessage) message;
+		
+		switch (robMess.getTypeOfMessage()){
+		case SERVER_ORDERTIME:
+			Order order = (Order)robMess.getContent();
+			Date duration = orderManager.calculateOrderTime(order);
+			robComm.sendOrderTime(duration);
+			break;
+		
+		case SERVER_POSITION:
+			Position position = wareRobot.getCurrentPosition();
+			robComm.sendPosition(position);
+			break;
+		
+		case SERVER_SLEEP:
+			setStatus(robot.SLEEPING);
+			break;
+		
+		case SERVER_ORDER:
+			orderManager.orderStart();
+			break;
+		
+		case SERVER_WAKEUP:
+			setStatus(robot.IDLE);
+			startRobot();
+			break;
+			
+		default:
+			break;
+			
+		}
 	}
 	
 	private StateType.robot getStatus() {
-	
-		return null;
+		return this.status;
 	}
 	
 	private void setStatus(StateType.robot status) {
+		this.status = status;
+	}
 	
-	}
-
-	@Override
-	public void orderStart() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean orderDone() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Date calculateOrderTime(Order order) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void explorationStart() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean explorationDone() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean hasUnexploredRooms() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void chargingStart() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean chargingDone() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isBumped() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean hasMessage() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Message readMessage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void sendRobotStatus(StateType.robot status) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void sendOrderTime(Date duration) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void sendPosition(Position position) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void sendOrderFinish(Order order) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public float getWorkload() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 
 }
