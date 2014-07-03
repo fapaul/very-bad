@@ -1,6 +1,7 @@
 package ServerSystem.Implementation;
 
 import Datatypes.Added.StateType;
+import RobotSystem.Implementation.RobotCommunication;
 import ServerSystem.Interfaces.New.IAdminControl;
 import ServerSystem.Interfaces.New.IOrderAccess;
 import de.hpi.sam.warehouse.*;
@@ -12,24 +13,27 @@ import de.cpslab.robotino.environment.Position;
 
 public class AccessManager<RobotBehavior> implements IOrderAccess, IAdminControl{
 
+	RobotBehavior behavior;
     WarehouseManagement wm;
-    StockroomManagement sm;
+    StockroomManagement stm;
     Server serv;
-    RobotBehavior behavior;
 
-    private OrderManagement om = new OrderManagement();
+    private ServerCommunication sc = new ServerCommunication();
+    private ServerManager sm = new ServerManager();
+    
     private float energyConsumption;
     
     @Override
     public void startup() {
         wm = WarehouseManagement.INSTANCE;
-        sm = StockroomManagement.INSTANCE;
+        stm = StockroomManagement.INSTANCE;
         serv = Server.INSTANCE;
+        sm.startServer();
     }
 
     @Override
     public void shutdown() {
-        // TODO Auto-generated method stub  
+        sm.stopServer(); 
     }
     
     @Override
@@ -78,8 +82,7 @@ public class AccessManager<RobotBehavior> implements IOrderAccess, IAdminControl
 
     @Override
     public StateType.robot getRobotStatus(RobotinoID robot) {
-        // TODO Auto-generated method stub
-        return null;
+        return sc.requestRobotStatus(robot);
     }
 
     @Override
