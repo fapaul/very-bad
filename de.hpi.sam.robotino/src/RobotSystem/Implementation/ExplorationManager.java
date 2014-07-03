@@ -27,6 +27,7 @@ public class ExplorationManager implements IExplorationManager {
 	
 	public ExplorationManager(WarehouseRobot robot, WarehouseRepresentation representation) {
 		this.robot = robot;
+		rf = new RouteFinder(robot, representation);
 		dm = new DriveManager(robot);
 		representation = new WarehouseRepresentation();
 		this.representation = representation;

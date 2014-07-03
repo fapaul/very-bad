@@ -54,7 +54,7 @@ public class OrderManager {
 	}
 
 	public void orderStart() {
-		System.out.println("starting order");
+		System.out.println("Starting order");
 		// No order nothing to do //TODO an error message might be good
 		if(currentOrder == null)
 			return;
@@ -109,21 +109,34 @@ public class OrderManager {
 	public Date calculateOrderTime(Order order) {
 		int distance = 0;
 		int explorationDistance = 0;
-		List<Route> cartAreaRoutes = rf.calculateCartAreaRoutes(rf.getPosition());
-		List<Route> issuingPointRoutes = rf.calculateIssuingPointsRoutes(rf.getPosition(), order);
-		List<Route> finalCartAreaRoutes = rf.calculateCartAreaRoutes(rf.getPosition(), order);
+		List<Route> cartAreaRoutes = rf.calculateCartAreaRoutes(robot.getCurrentPosition());
+		List<Route> issuingPointRoutes = rf.calculateIssuingPointsRoutes(robot.getCurrentPosition(), order);
+		List<Route> finalCartAreaRoutes = rf.calculateCartAreaRoutes(robot.getCurrentPosition(), order);
+		
+		if(cartAreaRoutes.size() == 0 || issuingPointRoutes.size() == 0 || finalCartAreaRoutes.size() == 0)
+			System.out.println("calculateOrderTime: Something went wrong with getting the routes");
+		System.out.println(cartAreaRoutes.size());
+		for(Route r : cartAreaRoutes)
+			System.out.println("areaRoutes " + r.getDistance());
+		System.out.println(issuingPointRoutes.size());
+		for(Route r : issuingPointRoutes)
+			System.out.println("issuingPoint " + r.getDistance());
+		System.out.println(finalCartAreaRoutes.size());
+		for(Route r : finalCartAreaRoutes)
+			System.out.println("finalCart " + r.getDistance());
+		
 		
 		// PLACEHOLDER
-		Route shortestCartAreaRoute = chooseRoute(cartAreaRoutes);
-		Route shortestIssuingPointRoutes = chooseRoute(issuingPointRoutes);
-		Route shortestCartAreaRoutes = chooseRoute(finalCartAreaRoutes);
-		
+		Route shortestCartAreaRoute = rf.getShortestRoute(cartAreaRoutes);
+		Route shortestIssuingPointRoutes = rf.getShortestRoute(issuingPointRoutes);
+		Route shortestCartAreaRoutes = rf.getShortestRoute(finalCartAreaRoutes);
+				
 		// calculate exploring distance if unexplored rooms exist
 		for (int i = 0; i < 3; i++) {
-			List<RoomPoint> rp;
+			List<RoomPoint> rp = null;
 			
 			// calculate distance for each subroute
-			Route route;
+			Route route = null;
 			switch (i) {
 				case (0):
 					route = shortestCartAreaRoute;
@@ -133,7 +146,7 @@ public class OrderManager {
 					route = shortestIssuingPointRoutes;
 					rp = route.getRoomPoints();
 					break;
-				default:
+				case (2):
 					route = shortestCartAreaRoutes;
 					rp = route.getRoomPoints();
 					break;
@@ -143,8 +156,10 @@ public class OrderManager {
 				if (!em.isExplored(r.getRoom())) {
 					Route explorationRoute = rf.calculateExplorationRoute(rf.getPosition(), r.getRoom());
 					explorationDistance += rf.getDistance(explorationRoute);
+					System.out.println("hass ");
 				}
 				else {
+					System.out.println("o");
 					distance += rf.getDistance(route);
 				}
 			}
@@ -152,7 +167,8 @@ public class OrderManager {
 		
 		// time in milli seconds
 		int explorationTime = explorationDistance/IWarehouseEnvironment.SAFETY_SPEED * 1000;
-		int routeTime = distance/dm.getMaxSpeed() * 1000;
+		int routeTime = (int) (((float) distance/dm.getMaxSpeed()) * 1000);
+		System.out.println(explorationDistance + " fjdk " + routeTime);
 		Date date = new Date(explorationTime + routeTime);
 		
 		return date;
