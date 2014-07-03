@@ -21,7 +21,7 @@ import de.hpi.sam.warehouse.stock.StockroomID;
 import de.cpslab.robotino.*;
 import de.cpslab.robotino.environment.Position;
 
-public class OrderManager implements IStockroom, IRobotExecute, IRouteFinder {
+public class OrderManager implements IRobotExecute, IRouteFinder {
 // DriverManager, ExplorationManager
 
 	private boolean done;
@@ -140,66 +140,5 @@ public class OrderManager implements IStockroom, IRobotExecute, IRouteFinder {
 	public boolean isBumped() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public boolean load(int numberOfProducts, IssuingPoint issuingPoint,
-			Cart cart) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Cart takeCart(CartPosition cartPosition) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean returnCart(Cart cart, CartPosition cartPosition) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public List<StockroomID> getStockrooms() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<IssuingPoint> getIssuingPoints(ProductType type) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<IssuingPoint> getAllIssueingPoints() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<CartArea> getCartAreas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Path> computePaths(StockroomID roomSrc, StockroomID roomDst) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public StockroomID getRoomFor(Position position) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Door> getDoors(StockroomID stockroom) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

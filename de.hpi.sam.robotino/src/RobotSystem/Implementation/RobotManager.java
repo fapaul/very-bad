@@ -12,7 +12,7 @@ import de.cpslab.robotino.sensor.interfaces.IBattery;
 import de.cpslab.robotino.sensor.interfaces.INorthStar;
 import de.hpi.sam.warehouse.order.Order;
 
-public class RobotManager implements IRobotCommunication, IBattery, INorthStar, IRobotExecute/*RobotStatusType*/{
+public class RobotManager implements IRobotCommunication, IRobotExecute {
 
 	private int BATTERYTHRESHOLD;
 	private RobotinoID id;
@@ -89,24 +89,6 @@ public class RobotManager implements IRobotCommunication, IBattery, INorthStar, 
 	public boolean isBumped() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public Position getCurrentPosition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int getCurrentOrientation() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getBatteryLevel() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override
