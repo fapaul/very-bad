@@ -35,15 +35,19 @@ public class OrderManager implements IRobotExecute {
 		dm = new DriveManager(robot);
 		rf = new RouteFinder(robot, rep);
 	}
-	
-	private Route chooseOrderRoute(Route[] routes, Order order) {
-	
+	/*
+	private Route chooseOrderRoute(List<Route> routes, Order order) 	
 		return null;
 	}
+	*/
 	
-	private Route chooseRoute(Route[] routes) {
-	
-		return null;
+	private Route chooseRoute(List<Route> routes) {
+		Route min = routes.get(0);
+		for (Route route : routes) {
+			if (route.getDistance() < min.getDistance())
+				min = route;
+		}
+		return min;
 	}
 
 	@Override
@@ -110,9 +114,9 @@ public class OrderManager implements IRobotExecute {
 		List<Route> finalCartAreaRoutes = rf.calculateCartAreaRoutes(rf.getPosition(), order);
 		
 		// PLACEHOLDER
-		Route shortestCartAreaRoute = cartAreaRoutes.get(0);
-		Route shortestIssuingPointRoutes = issuingPointRoutes.get(0);
-		Route shortestCartAreaRoutes = finalCartAreaRoutes.get(0);
+		Route shortestCartAreaRoute = chooseRoute(cartAreaRoutes);
+		Route shortestIssuingPointRoutes = chooseRoute(issuingPointRoutes);
+		Route shortestCartAreaRoutes = chooseRoute(finalCartAreaRoutes);
 		
 		// calculate exploring distance if unexplored rooms exist
 		for (int i = 0; i < 3; i++) {
@@ -175,8 +179,7 @@ public class OrderManager implements IRobotExecute {
 
 	@Override
 	public void chargingStart() {
-		// TODO Auto-generated method stub
-		
+	// TODO Auto-generated method stub
 	}
 
 	@Override
