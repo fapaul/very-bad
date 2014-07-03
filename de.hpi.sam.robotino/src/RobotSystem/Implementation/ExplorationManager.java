@@ -8,6 +8,7 @@ import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IExplorationManager;
 import RobotSystem.Interfaces.New.IRouteFinder;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.environment.IWarehouseEnvironment;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.stock.Stockroom;
 import de.hpi.sam.warehouse.stock.StockroomID;
@@ -19,15 +20,22 @@ public class ExplorationManager implements IRouteFinder, IExplorationManager {
 	private boolean done;
 	private Route currentRoute;
 	private WarehouseRepresentation representation;
+	private RouteFinder rf = new RouteFinder();
+	
 	@Override
 	public Date calculateExplorationTime(StockroomID room) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO assumption: distance in mm
+		int distance = rf.getDistance(rf.calculateExplorationRoute(rf.getPosition(), room));
+		
+		// time in milli seconds
+		int time = distance/IWarehouseEnvironment.SAFETY_SPEED * 1000;
+		Date date = new Date(time);
+		
+		return date;
 	}
 	@Override
 	public void explorationStart(StockroomID room) {
 		// TODO Auto-generated method stub
-		
 	}
 	@Override
 	public boolean isExplored(StockroomID room) {
@@ -35,42 +43,34 @@ public class ExplorationManager implements IRouteFinder, IExplorationManager {
 	}
 	@Override
 	public List<Route> calculateCartAreaRoutes(Position from) {
-		// TODO Auto-generated method stub
-		return null;
+		return rf.calculateCartAreaRoutes(from);
 	}
 	@Override
 	public List<Route> calculateCartAreaRoutes(Position from, Order order) {
-		// TODO Auto-generated method stub
-		return null;
+		return rf.calculateCartAreaRoutes(from, order);
 	}
 	@Override
 	public List<Route> calculateIssuingPointsRoutes(Position from, Order order) {
-		// TODO Auto-generated method stub
-		return null;
+		return rf.calculateIssuingPointsRoutes(from, order);
 	}
 	@Override
 	public Route calculateExplorationRoute(Position from, Stockroom room) {
-		// TODO Auto-generated method stub
-		return null;
+		return rf.calculateExplorationRoute(from, room);
 	}
 	@Override
 	public Route calculateChargingRoute(Position from) {
-		// TODO Auto-generated method stub
-		return null;
+		return rf.calculateChargingRoute(from);
 	}
 	@Override
 	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
+		return rf.getPosition();
 	}
 	@Override
 	public int getDistance(Route route) {
-		// TODO Auto-generated method stub
-		return 0;
+		return rf.getDistance(route);
 	}
 	@Override
 	public StockroomID[] getNearRooms() {
-		// TODO Auto-generated method stub
-		return null;
+		return rf.getNearRooms();
 	}	
 }
