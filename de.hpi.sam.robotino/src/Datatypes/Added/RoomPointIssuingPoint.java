@@ -5,7 +5,7 @@ import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.IssuingPoint;
 import de.cpslab.robotino.*;
 
-public class RoomPointIssuingPoint extends RoomPoint{
+public class RoomPointIssuingPoint extends RoomPoint {
 
 	private int itemsToTake;
 	private IssuingPoint point;
