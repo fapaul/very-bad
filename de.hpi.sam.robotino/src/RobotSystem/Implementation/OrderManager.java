@@ -191,8 +191,7 @@ public class OrderManager implements IRobotExecute {
 	}
 	
 	public boolean isExplored(StockroomID room) {
-		WarehouseRepresentation representation = new WarehouseRepresentation();
-		return representation.getExplorationStatus(room) == 100;
+		return rep.getExplorationStatus(room) == 100;
 	}
 	
 
