@@ -10,7 +10,7 @@ public interface IAdminControl {
 	
 	void shutdown();
 	
-	float setEnergyConsumption();
+	void setEnergyConsumption(float energyConsumption);
 	
 	void addRobot(RobotinoID robot);
 	
