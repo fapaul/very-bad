@@ -16,7 +16,7 @@ public class RoomPoint {
 		WarehouseRepresentation warehouseRep = new WarehouseRepresentation();
 		this.location = location;
 		this.room = warehouseRep.getRoomFor(location);
-		System.out.println("testet " + (this.room==null) + "\t" + location.getXPosition());
+		//System.out.println("testet " + (this.room==null) + "\t" + location.getXPosition());
 	}
 	
 	public RoomPoint(Position location, StockroomID room) {

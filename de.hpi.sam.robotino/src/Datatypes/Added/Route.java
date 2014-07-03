@@ -18,7 +18,17 @@ public class Route {
 		}
 		points.add(roomPoint);
 	}
-
+	
+	public void concat(Route otherRoute) {
+		// Concats a route to another
+		for(RoomPoint roomPoint : otherRoute.getRoomPoints()) {
+			if(points.size() > 1) {
+				distance += points.get(points.size()-1).distance(roomPoint);
+			}
+			points.add(roomPoint);
+		}
+	}
+	
 	public double getDistance() {
 		return distance;
 	}	

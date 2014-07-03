@@ -12,8 +12,8 @@ import de.hpi.sam.warehouse.stock.CartPosition;
 
 
 public class CartSource extends RoomPointCartArea {
-	WarehouseRobot warehouseRobot = new WarehouseRobot(new RobotinoID("000.000.000.000"));
-	
+	//WarehouseRobot warehouseRobot = new WarehouseRobot(new RobotinoID("000.000.000.000"));
+	private WarehouseRobot warehouseRobot;
 	public CartSource(CartArea cartArea) {
 		super(cartArea);
 		carts = cartArea.getCartPositions();
@@ -23,6 +23,7 @@ public class CartSource extends RoomPointCartArea {
 	
 	@Override
 	public Cart interact(Cart cart,  WarehouseRobot robot){
+		this.warehouseRobot = robot;
 		if (carts.size() < 1)
 			return null;
 		CartPosition cartPosition = carts.get(0);
