@@ -19,6 +19,7 @@ import de.hpi.sam.warehouse.stock.Door;
 import de.hpi.sam.warehouse.stock.IssuingPoint;
 import de.hpi.sam.warehouse.stock.Stockroom;
 import de.hpi.sam.warehouse.stock.StockroomID;
+import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 import de.cpslab.robotino.*;
 import de.cpslab.robotino.environment.Position;
 
@@ -31,9 +32,11 @@ public class OrderManager implements IRobotExecute {
 	private Order currentOrder = null;
 	private Cart currentCart = null;
 	private WarehouseRobot robot = null;
+	private WarehouseRepresentation rep = null;
 	
-	public OrderManager(WarehouseRobot r) {
+	public OrderManager(WarehouseRobot r, WarehouseRepresentation wr) {
 		robot = r;
+		rep = wr;
 	}
 	
 	private Route chooseOrderRoute(Route[] routes, Order order) {
@@ -114,13 +117,14 @@ public class OrderManager implements IRobotExecute {
 
 	@Override
 	public boolean explorationDone() {
-		// TODO Auto-generated method stub
-		return false;
+		return !hasUnexploredRooms();
 	}
 
 	@Override
 	public boolean hasUnexploredRooms() {
-		// TODO Auto-generated method stub
+		for(StockroomID id : rep.getStockrooms())
+			if(rep.getExplorationStatus(id) < 100)
+				return true;
 		return false;
 	}
 
@@ -132,12 +136,6 @@ public class OrderManager implements IRobotExecute {
 
 	@Override
 	public boolean chargingDone() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isBumped() {
 		// TODO Auto-generated method stub
 		return false;
 	}
