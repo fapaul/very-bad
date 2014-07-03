@@ -13,51 +13,12 @@ import de.hpi.sam.warehouse.stock.StockroomID;
 import de.cpslab.robotino.*;
 import de.cpslab.robotino.environment.Position;
 
-public class ChargingManager implements IRobotExecute, IRouteFinder {
+public class ChargingManager implements IRobotExecute {
 //DriverManager
 
 	private boolean done;
 	private Route currentRoute;
-	@Override
-	public List<Route> calculateCartAreaRoutes(Position from) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public List<Route> calculateCartAreaRoutes(Position from, Order order) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public List<Route> calculateIssuingPointsRoutes(Position from, Order order) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Route calculateExplorationRoute(Position from, Stockroom room) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Route calculateChargingRoute(Position from) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public int getDistance(Route route) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	@Override
-	public StockroomID[] getNearRooms() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 	@Override
 	public void orderStart() {
 		// TODO Auto-generated method stub

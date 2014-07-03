@@ -1,8 +1,10 @@
 package RobotSystem.Interfaces.New;
 
 import java.util.Date;
+import java.util.List;
 
 import Datatypes.Added.StateType;
+import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.order.Order;
@@ -22,7 +24,5 @@ public interface IRobotCommunication {
 	void sendOrderFinish(Order order);
 	
 	float getWorkload();
-	
-	void requestForRobots();
 
 }

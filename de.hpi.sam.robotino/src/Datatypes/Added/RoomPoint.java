@@ -1,8 +1,10 @@
 package Datatypes.Added;
 
+import de.hpi.sam.warehouse.WarehouseManagement;
 import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.StockroomID;
+import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 import de.cpslab.robotino.environment.Position;
 
 public class RoomPoint {
@@ -13,6 +15,18 @@ public class RoomPoint {
 	public RoomPoint(Position location, StockroomID room) {
 		this.location = location;
 		this.room = room;
+	}
+	
+	public RoomPoint(Position location) {
+		WarehouseRepresentation warehouseRep = new WarehouseRepresentation();
+		this.location = location;
+		this.room = warehouseRep.getRoomFor(location);
+	}
+	
+	public RoomPoint(int positionX, int positionZ) {
+		WarehouseRepresentation warehouseRep = new WarehouseRepresentation();
+		this.location = new Position(positionX, positionZ);
+		this.room = warehouseRep.getRoomFor(location);
 	}
 	
 	public RoomPoint() {
@@ -42,5 +56,10 @@ public class RoomPoint {
 
 	public void setRoom(StockroomID room) {
 		this.room = room;
+	}
+	
+	public double distance(RoomPoint other) {
+		return Math.sqrt(Math.pow(other.location.getXPosition() - this.location.getXPosition(), 2)
+				+ (Math.pow(other.location.getZPosition() - this.location.getZPosition(), 2)));
 	}
 }

@@ -1,3 +1,4 @@
+
 package RobotSystem.Implementation;
 
 import java.util.Date;
@@ -132,4 +133,6 @@ public class RobotManager implements IRobotCommunication, IRobotExecute {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+
 }

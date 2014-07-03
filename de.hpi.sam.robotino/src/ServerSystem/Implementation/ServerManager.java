@@ -3,6 +3,7 @@ package ServerSystem.Implementation;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class ServerManager extends Thread {
 	int MAX_MESSAGE_ONCE = 20;
 	int MAX_ORDER_ONCE = 20;
 	float energyConsumption;
-	RobotinoID[] robots;
+	List<RobotinoID> robots;
 	Set<Order> pendingOrders;
 	Set<Order> inprogressOrders;
 	
@@ -70,7 +71,7 @@ public class ServerManager extends Thread {
 			break;
 		case SERVER_SLEEP:
 			startServer();
-		
+			break;
 		default:
 			break;
 		}

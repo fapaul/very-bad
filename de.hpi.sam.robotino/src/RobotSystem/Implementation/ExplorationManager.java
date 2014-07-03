@@ -16,7 +16,7 @@ import de.hpi.sam.warehouse.stock.Stockroom;
 import de.hpi.sam.warehouse.stock.StockroomID;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
-public class ExplorationManager implements IRouteFinder, IExplorationManager {
+public class ExplorationManager implements IExplorationManager {
 //DriverManager
 	
 	private boolean done;
@@ -55,37 +55,5 @@ public class ExplorationManager implements IRouteFinder, IExplorationManager {
 	@Override
 	public boolean isExplored(StockroomID room) {
 		return representation.getExplorationStatus(room) == 100;
-	}
-	@Override
-	public List<Route> calculateCartAreaRoutes(Position from) {
-		return rf.calculateCartAreaRoutes(from);
-	}
-	@Override
-	public List<Route> calculateCartAreaRoutes(Position from, Order order) {
-		return rf.calculateCartAreaRoutes(from, order);
-	}
-	@Override
-	public List<Route> calculateIssuingPointsRoutes(Position from, Order order) {
-		return rf.calculateIssuingPointsRoutes(from, order);
-	}
-	@Override
-	public Route calculateExplorationRoute(Position from, Stockroom room) {
-		return rf.calculateExplorationRoute(from, room);
-	}
-	@Override
-	public Route calculateChargingRoute(Position from) {
-		return rf.calculateChargingRoute(from);
-	}
-	@Override
-	public Position getPosition() {
-		return rf.getPosition();
-	}
-	@Override
-	public int getDistance(Route route) {
-		return rf.getDistance(route);
-	}
-	@Override
-	public StockroomID[] getNearRooms() {
-		return rf.getNearRooms();
 	}	
 }
