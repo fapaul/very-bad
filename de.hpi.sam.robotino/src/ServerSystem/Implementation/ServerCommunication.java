@@ -8,6 +8,7 @@ import Datatypes.Added.StateType;
 import Datatypes.Added.StatusMessage;
 import ServerSystem.Interfaces.New.IServerCommunication;
 import de.cpslab.robotino.RobotinoID;
+import de.cpslab.robotino.actuator.communication.CommunicationID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.communication.WarehouseCommunicationServer;
@@ -96,7 +97,7 @@ public class ServerCommunication implements  IServerCommunication {
 	@Override
 	public void sendSleep(RobotinoID robot) {
 		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_SLEEP);
-		serverCommServ.sendMessage(robot, messToSend);
+		serverCommServ.sendMessage(robot , messToSend);
 	}
 
 	@Override
@@ -108,7 +109,6 @@ public class ServerCommunication implements  IServerCommunication {
 	@Override
 	public void sendOrderStart(RobotinoID robot) {
 		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_ORDER);
-		// TODO add order message 
 		serverCommServ.sendMessage(robot, messToSend);
 	}
 

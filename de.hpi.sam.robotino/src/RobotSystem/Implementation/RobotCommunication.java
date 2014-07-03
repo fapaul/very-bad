@@ -11,30 +11,34 @@ import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.CommunicationID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.actuator.communication.RobotinoWLanAdapter;
-import de.cpslab.robotino.actuator.interfaces.IWLanAdapter;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.stock.StockroomID;
 
 public class RobotCommunication implements IRobotCommunication {
 
-	private float WLANTHRESHOLD;
 	private CommunicationID server;
-	private RobotinoID robot;
 	private Queue<Message> incoming;		// = new LinkedList<Message>;
-	private List<StockroomID> stockrooms;
-	private List <RobotinoID> communicationPartners;
+	private List <CommunicationID> robots;
 	private RobotinoWLanAdapter robotComm;
+	private WarehouseRobot warehouseRobot;
+	private List<StockroomID> explorableStockrooms;
+
 	
 	
-	public void exchangeInformation() {
-		List<CommunicationID> communicationPartnerIPs = robotComm.scanForCommunicationPartnerInRange();
-		for (CommunicationID robot : communicationPartnerIPs){
-			communicationPartners.add(new RobotinoID(robot.getName()));
-			
-			
+	
+	public void exchangeInformation(){
+		for(int j = 0; j < explorableStockrooms.size();j++ ){
+			for (int i = 0; i < robots.size(); i++){
+				if (robots.get(i) == server){
+					i++;
+				}else{
+					warehouseRobot.requestAndMergeExplorationInfo(explorableStockrooms.get(j), (RobotinoID)robots.get(i));
+				}
+
+			}
 		}
-	
 	}
 
 	@Override
@@ -51,6 +55,7 @@ public class RobotCommunication implements IRobotCommunication {
 	@Override
 	public void sendRobotStatus(StateType.robot status) {
 		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_STATUS);
+		messToSend.setContent(status);
 		robotComm.sendMessage(server, messToSend);
 		
 	}
@@ -58,6 +63,7 @@ public class RobotCommunication implements IRobotCommunication {
 	@Override
 	public void sendOrderTime(Date duration) {
 		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_ORDERTIME);
+		messToSend.setContent(duration);
 		robotComm.sendMessage(server, messToSend);
 		
 	}
@@ -65,12 +71,14 @@ public class RobotCommunication implements IRobotCommunication {
 	@Override
 	public void sendPosition(Position position) {
 		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_POSITION);
+		messToSend.setContent(position);
 		robotComm.sendMessage(server, messToSend);
 	}
 
 	@Override
 	public void sendOrderFinish(Order order) {
 		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_FINISH);
+		messToSend.setContent(order);
 		robotComm.sendMessage(server, messToSend);
 	}
 
@@ -82,21 +90,5 @@ public class RobotCommunication implements IRobotCommunication {
 	public void fetchMessage(){
 		incoming.addAll(robotComm.receiveMessages());
 	}
-
-	@Override
-	public void requestForRobots() {
-		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_REQUEST);
-		robotComm.sendMessage(server, messToSend);
-		
-		List<RobotinoID> robots = null;
-		while(robots == null){
-			//Wait for message
-			List<Message> rec = robotComm.receiveMessages();
-			
-			
-		}
-		
-	}
-	
 
 }
