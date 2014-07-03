@@ -7,9 +7,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import Datatypes.Added.StateType;
 import Datatypes.Added.StatusMessage;
 import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.Message;
+import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.order.OrderManagement;
 
@@ -17,7 +19,9 @@ public class ServerManager extends Thread {
 
 	OrderManagement 	orderManager;
 	ServerCommunication serverComm;
-	
+	Position robotPos;
+	StateType.robot robotState;
+	Date orderTime;
 	// Maximum number of messages and orders worked at at once
 	int MAX_MESSAGE_ONCE = 20;
 	int MAX_ORDER_ONCE = 20;
@@ -50,25 +54,28 @@ public class ServerManager extends Thread {
 
 	void handleMessage(Message message) {
 		StatusMessage servMess = (StatusMessage) message;
+		
 		switch (servMess.getTypeOfMessage()) {
-		case SERVER_ORDER:
+		case ROBOT_STATUS:
+			robotState = (StateType.robot)servMess.getContent();
+			break;
+		case ROBOT_POSITION:
+			robotPos = (Position)servMess.getContent();
+			break;
+		case ROBOT_ORDERTIME:
+			orderTime = (Date)servMess.getContent();
+			break;
+		/*case ROBOT_FINISH:
 			
 			break;
-		case SERVER_ORDERTIME:
-					
-					break;
-		case SERVER_POSITION:
+		case ROBOT_CHARGING:
 			
-			break;
-		case SERVER_SLEEP:
-			stopServer();
-			break;
-		case SERVER_STATUS:
-			
-			break;
+			break;*/
 		case SERVER_WAKEUP:
 			startServer();
 			break;
+		case SERVER_SLEEP:
+			startServer();
 		
 		default:
 			break;
