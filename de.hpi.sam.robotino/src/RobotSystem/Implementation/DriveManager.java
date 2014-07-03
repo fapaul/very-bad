@@ -1,7 +1,11 @@
 package RobotSystem.Implementation;
 
 //import RobotExecute.RobotExecute.*;
+import java.util.Date;
+
 import RobotSystem.Interfaces.New.IDriveManager;
+import RobotSystem.Interfaces.New.IRobotExecute;
+import de.cpslab.robotino.actuator.interfaces.IRobotinoWheels;
 import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.order.Order;
@@ -37,11 +41,13 @@ public class DriveManager implements IDriveManager { // = IDrive
 
 	@Override
 	public int getMaxSpeed() {
-		return robot.MAX_MOVEMENT_SPEED;
+		//return robot.MAX_MOVEMENT_SPEED;
+		return IRobotinoWheels.MAX_MOVEMENT_SPEED;
 	}
 
 	@Override
 	public boolean isBumped() {
-		return bumped;
+		return this.bumped;
 	}
+
 }

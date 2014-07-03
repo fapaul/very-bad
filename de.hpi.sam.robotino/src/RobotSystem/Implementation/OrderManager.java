@@ -14,8 +14,9 @@ import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.IssuingPoint;
 import de.hpi.sam.warehouse.stock.StockroomID;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
+import RobotSystem.Implementation.*;
 
-public class OrderManager implements IRobotExecute {
+public class OrderManager {
 // DriverManager, ExplorationManager
 
 	RouteFinder rf;
@@ -28,12 +29,14 @@ public class OrderManager implements IRobotExecute {
 	private Cart currentCart = null;
 	private WarehouseRobot robot = null;
 	private WarehouseRepresentation rep = null;
+	private ExplorationManager em;
 	
 	public OrderManager(WarehouseRobot r, WarehouseRepresentation wr) {
 		robot = r;
 		rep = wr;
 		dm = new DriveManager(robot);
 		rf = new RouteFinder(robot, rep);
+		em = new ExplorationManager(r, this.rep);
 	}
 	/*
 	private Route chooseOrderRoute(List<Route> routes, Order order) 	
@@ -50,7 +53,6 @@ public class OrderManager implements IRobotExecute {
 		return min;
 	}
 
-	@Override
 	public void orderStart() {
 		System.out.println("starting order");
 		// No order nothing to do //TODO an error message might be good
@@ -59,7 +61,7 @@ public class OrderManager implements IRobotExecute {
 		done = false;
 		// Getting to the cart area and the position of the first cart
 		robot.driveToPositionAvoidingObstacles(currentOrder.getCartArea().getCartPositions().get(0));
-		if(isBumped()) {
+		if(dm.isBumped()) {
 			System.out.println("Getting to cart area failed");
 			return;
 		}
@@ -100,12 +102,10 @@ public class OrderManager implements IRobotExecute {
 		done = true;
 	}
 
-	@Override
 	public boolean orderDone() {
 		return done;
 	}
 
-	@Override
 	public Date calculateOrderTime(Order order) {
 		int distance = 0;
 		int explorationDistance = 0;
@@ -140,7 +140,7 @@ public class OrderManager implements IRobotExecute {
 			}
 			// check if the room is explored
 			for (RoomPoint r : rp) {
-				if (!isExplored(r.getRoom())) {
+				if (!em.isExplored(r.getRoom())) {
 					Route explorationRoute = rf.calculateExplorationRoute(rf.getPosition(), r.getRoom());
 					explorationDistance += rf.getDistance(explorationRoute);
 				}
@@ -158,44 +158,6 @@ public class OrderManager implements IRobotExecute {
 		return date;
 	}
 
-	@Override
-	public void explorationStart() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean explorationDone() {
-		return !hasUnexploredRooms();
-	}
-
-	@Override
-	public boolean hasUnexploredRooms() {
-		for(StockroomID id : rep.getStockrooms())
-			if(rep.getExplorationStatus(id) < 100)
-				return true;
-		return false;
-	}
-
-	@Override
-	public void chargingStart() {
-	// TODO Auto-generated method stub
-	}
-
-	@Override
-	public boolean chargingDone() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isBumped() {
-		return robot.isBumperActivated();
-	}
-	
-	public boolean isExplored(StockroomID room) {
-		return rep.getExplorationStatus(room) == 100;
-	}
 	
 
 }
