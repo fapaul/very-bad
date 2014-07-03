@@ -10,6 +10,7 @@ import de.hpi.sam.warehouse.*;
 import de.hpi.sam.warehouse.environment.Path;
 import de.hpi.sam.warehouse.interfaces.IStockroom;
 import de.hpi.sam.warehouse.order.Order;
+import de.hpi.sam.warehouse.order.OrderItem;
 import de.hpi.sam.warehouse.order.ProductType;
 import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.CartArea;
@@ -25,10 +26,15 @@ public class OrderManager implements IRobotExecute, IRouteFinder {
 // DriverManager, ExplorationManager
 
 	private boolean done;
-	private Route currentSourceRoute;
-	private Route currentDestinationRoute;
-	private Order currentOrder;
-	private Cart currentCart;
+	private Route currentSourceRoute = null;
+	private Route currentDestinationRoute = null;
+	private Order currentOrder = null;
+	private Cart currentCart = null;
+	private WarehouseRobot robot = null;
+	
+	public OrderManager(WarehouseRobot r) {
+		robot = r;
+	}
 	
 	private Route chooseOrderRoute(Route[] routes, Order order) {
 	
@@ -90,8 +96,50 @@ public class OrderManager implements IRobotExecute, IRouteFinder {
 
 	@Override
 	public void orderStart() {
-		// TODO Auto-generated method stub
+		System.out.println("starting order");
+		// No order nothing to do //TODO an error message might be good
+		if(currentOrder == null)
+			return;
+		// Getting to the cart area and the position of the first cart
+		robot.driveToPositionAvoidingObstacles(currentOrder.getCartArea().getCartPositions().get(0));
+		if(isBumped()) {
+			System.out.println("Getting to cart area failed");
+			return;
+		}
 		
+		// Get the cart
+		currentCart = robot.takeCart(currentOrder.getCartArea().getCartPositions().get(0));
+		if(currentCart == null) {
+			System.out.println("Error retrieving cart for CartArea");
+			return;
+		}
+		
+		for (OrderItem orderItem : currentOrder.getOrderItems()) {
+			System.out.println("processing orderitem");
+			if( robot.getIssuingPoints(orderItem.getProductType()).size() < 1) {
+				System.out.println("Error: No issuings points for order item");
+				return;
+			}
+			// Find nearest issuing points 
+			
+			int robotX, robotZ;
+			robotX = robot.getCurrentPosition().getXPosition();
+			robotZ = robot.getCurrentPosition().getZPosition();
+			IssuingPoint nearest = robot.getIssuingPoints(orderItem.getProductType()).get(0);
+			for(IssuingPoint point : robot.getIssuingPoints(orderItem.getProductType())) {
+				if(point.getXPosition() - robotX + point.getZPosition() - robotZ  < nearest.getXPosition() - robotX + nearest.getZPosition() - robotZ) {
+					nearest = point;
+				}
+			}
+			
+			// Drive to issuingpoint and retrieve items
+			robot.driveToPositionAvoidingObstacles(nearest);
+			robot.load(orderItem.getQuantity(), nearest, currentCart);
+		}
+		System.out.println("finished order");
+		// TODO for testing we return to the current cart area
+		robot.driveToPositionAvoidingObstacles(currentOrder.getCartArea().getCartPositions().get(0));
+		currentCart = null;		
 	}
 
 	@Override
