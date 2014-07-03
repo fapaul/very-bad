@@ -31,6 +31,7 @@ public class DriveManager implements IDriveManager { // = IDrive
 	}
 	
 	public void drive(Position position) {
+		System.out.println("Bumped status " +isBumped());
 		robot.driveToPositionAvoidingObstacles(position);		
 	}
 

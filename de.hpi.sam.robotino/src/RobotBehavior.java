@@ -29,6 +29,8 @@ public class RobotBehavior implements Runnable
 		// TODO Implement the behavior of the robots
 		System.out.println(this.robot.getID().getName() + " Starting...");
 		WarehouseRepresentation wr = new WarehouseRepresentation();
+		// Test from Jakob		
+		
 	//	RouteFinder rf = new RouteFinder(this.robot,  wr);
 	//	Position pos = rf.getPosition();
 	//	DriveManager driveMan = new DriveManager(this.robot);	
@@ -58,6 +60,34 @@ public class RobotBehavior implements Runnable
 		//System.out.println("yeeah");
 		//driveMan.drive(new Position(100, 100));
 		//System.out.println("after drive");
+
+// Test from Ajay
+	RouteFinder rf = new RouteFinder(this.robot,  wr);
+		Position pos = rf.getPosition();
+		DriveManager driveMan = new DriveManager(this.robot);	
+	System.out.println("test " + robot.getCurrentPosition().getXPosition() + "\t" + robot.getCurrentPosition().getZPosition());
+		StockroomID sID = wr.getRoomFor(robot.getCurrentPosition());
+		System.out.println("Stockroom is:" + sID.getID().toString());
+		StockroomManagement StockManager = StockroomManagement.INSTANCE;
+		List<CartArea> Areas = StockManager.getCartAreas(); 
+		
+		CartArea Area = Areas.get(0); 
+		int AreaPosX = Area.getCartPositions().get(0).getXPosition();
+		int AreaPosY = Area.getCartPositions().get(0).getZPosition();
+		Position AreaPos = new Position(AreaPosX, AreaPosY); 
+		
+		System.out.println(robot.getCurrentPosition().getXPosition());
+		driveMan.drive(AreaPos);
+		//System.out.println(robot.getCurrentPosition().getXPosition());
+		CartPosition CartPos = Area.getCartPositions().get(0);
+		//this.robot.takeCart(CartPos);
+		StockroomID stock = wr.getRoomFor((Position) CartPos); 
+		CartSource src = new CartSource(Area);
+		src.interact(null , this.robot); 
+		System.out.println("yeeah");
+		driveMan.drive(new Position(100, 100));
+		System.out.println("after drive");
+
 		while (!this.robot.isBumperActivated())
 		{
 			try
