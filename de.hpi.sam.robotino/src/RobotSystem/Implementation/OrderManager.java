@@ -3,29 +3,24 @@ package RobotSystem.Implementation;
 import java.util.Date;
 import java.util.List;
 
+import Datatypes.Added.RoomPoint;
 import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IRobotExecute;
-import RobotSystem.Interfaces.New.IRouteFinder;
-import de.hpi.sam.warehouse.*;
-import de.hpi.sam.warehouse.environment.Path;
-import de.hpi.sam.warehouse.interfaces.IStockroom;
+import de.hpi.sam.warehouse.WarehouseRobot;
+import de.hpi.sam.warehouse.environment.IWarehouseEnvironment;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.order.OrderItem;
-import de.hpi.sam.warehouse.order.ProductType;
 import de.hpi.sam.warehouse.stock.Cart;
-import de.hpi.sam.warehouse.stock.CartArea;
-import de.hpi.sam.warehouse.stock.CartPosition;
-import de.hpi.sam.warehouse.stock.Door;
 import de.hpi.sam.warehouse.stock.IssuingPoint;
-import de.hpi.sam.warehouse.stock.Stockroom;
 import de.hpi.sam.warehouse.stock.StockroomID;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
-import de.cpslab.robotino.*;
-import de.cpslab.robotino.environment.Position;
 
 public class OrderManager implements IRobotExecute {
 // DriverManager, ExplorationManager
 
+	RouteFinder rf;
+	DriveManager dm;
+	
 	private boolean done;
 	private Route currentSourceRoute = null;
 	private Route currentDestinationRoute = null;
@@ -37,6 +32,8 @@ public class OrderManager implements IRobotExecute {
 	public OrderManager(WarehouseRobot r, WarehouseRepresentation wr) {
 		robot = r;
 		rep = wr;
+		dm = new DriveManager(robot);
+		rf = new RouteFinder(robot, rep);
 	}
 	
 	private Route chooseOrderRoute(Route[] routes, Order order) {
@@ -55,6 +52,7 @@ public class OrderManager implements IRobotExecute {
 		// No order nothing to do //TODO an error message might be good
 		if(currentOrder == null)
 			return;
+		done = false;
 		// Getting to the cart area and the position of the first cart
 		robot.driveToPositionAvoidingObstacles(currentOrder.getCartArea().getCartPositions().get(0));
 		if(isBumped()) {
@@ -94,19 +92,66 @@ public class OrderManager implements IRobotExecute {
 		System.out.println("finished order");
 		// TODO for testing we return to the current cart area
 		robot.driveToPositionAvoidingObstacles(currentOrder.getCartArea().getCartPositions().get(0));
-		currentCart = null;		
+		currentCart = null;	
+		done = true;
 	}
 
 	@Override
 	public boolean orderDone() {
-		// TODO Auto-generated method stub
-		return false;
+		return done;
 	}
 
 	@Override
 	public Date calculateOrderTime(Order order) {
-		// TODO Auto-generated method stub
-		return null;
+		int distance = 0;
+		int explorationDistance = 0;
+		List<Route> cartAreaRoutes = rf.calculateCartAreaRoutes(rf.getPosition());
+		List<Route> issuingPointRoutes = rf.calculateIssuingPointsRoutes(rf.getPosition(), order);
+		List<Route> finalCartAreaRoutes = rf.calculateCartAreaRoutes(rf.getPosition(), order);
+		
+		// PLACEHOLDER
+		Route shortestCartAreaRoute = cartAreaRoutes.get(0);
+		Route shortestIssuingPointRoutes = issuingPointRoutes.get(0);
+		Route shortestCartAreaRoutes = finalCartAreaRoutes.get(0);
+		
+		// calculate exploring distance if unexplored rooms exist
+		for (int i = 0; i < 3; i++) {
+			List<RoomPoint> rp;
+			
+			// calculate distance for each subroute
+			Route route;
+			switch (i) {
+				case (0):
+					route = shortestCartAreaRoute;
+					rp = route.getRoomPoints();
+					break;
+				case (1):
+					route = shortestIssuingPointRoutes;
+					rp = route.getRoomPoints();
+					break;
+				default:
+					route = shortestCartAreaRoutes;
+					rp = route.getRoomPoints();
+					break;
+			}
+			// check if the room is explored
+			for (RoomPoint r : rp) {
+				if (!isExplored(r.getRoom())) {
+					Route explorationRoute = rf.calculateExplorationRoute(rf.getPosition(), r.getRoom());
+					explorationDistance += rf.getDistance(explorationRoute);
+				}
+				else {
+					distance += rf.getDistance(route);
+				}
+			}
+		}
+		
+		// time in milli seconds
+		int explorationTime = explorationDistance/IWarehouseEnvironment.SAFETY_SPEED * 1000;
+		int routeTime = distance/dm.getMaxSpeed() * 1000;
+		Date date = new Date(explorationTime + routeTime);
+		
+		return date;
 	}
 
 	@Override
@@ -139,4 +184,16 @@ public class OrderManager implements IRobotExecute {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean isBumped() {
+		return robot.isBumperActivated();
+	}
+	
+	public boolean isExplored(StockroomID room) {
+		WarehouseRepresentation representation = new WarehouseRepresentation();
+		return representation.getExplorationStatus(room) == 100;
+	}
+	
+
 }
