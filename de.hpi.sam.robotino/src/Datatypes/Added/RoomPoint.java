@@ -10,6 +10,15 @@ public class RoomPoint {
 	protected Position location;
 	protected StockroomID room;
 	
+	public RoomPoint(Position location, StockroomID room) {
+		this.location = location;
+		this.room = room;
+	}
+	
+	public RoomPoint() {
+		// TODO Auto-generated constructor stub
+	}	
+	
 	Cart interact(Cart cart) {
 		return interact(cart, null);
 	}

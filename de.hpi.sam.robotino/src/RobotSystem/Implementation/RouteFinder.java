@@ -3,13 +3,11 @@ package RobotSystem.Implementation;
 import java.util.ArrayList;
 import java.util.List;
 
-import Datatypes.Added.RoomPoint;
+import Datatypes.Added.*;
 import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IRouteFinder;
-import de.cpslab.robotino.environment.Position;
-import de.cpslab.robotino.sensor.interfaces.INorthStar;
+import de.hpi.sam.warehouse.*;
 import de.hpi.sam.warehouse.environment.Path;
-import de.hpi.sam.warehouse.environment.PathElement;
 import de.hpi.sam.warehouse.interfaces.IStockroom;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.order.ProductType;
@@ -20,6 +18,10 @@ import de.hpi.sam.warehouse.stock.Door;
 import de.hpi.sam.warehouse.stock.IssuingPoint;
 import de.hpi.sam.warehouse.stock.Stockroom;
 import de.hpi.sam.warehouse.stock.StockroomID;
+import de.cpslab.robotino.*;
+import de.cpslab.robotino.environment.Position;
+import de.cpslab.robotino.sensor.interfaces.INorthStar;
+import de.hpi.sam.warehouse.environment.*;
 
 public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 	
@@ -27,23 +29,27 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 	private Position destinationPosition;
 	
 	private List<Route> calculateSubRoute(RoomPoint from, RoomPoint to) {
-		
-		StockroomID start = from.getRoom();
-		StockroomID end = to.getRoom();
-		List<Path> paths = computePaths(start, end);
-		for (Path i : paths) {
-			List<Route> routes = new ArrayList<Route>();
-			for (Route r : routes) {
-				r.add(from);
-			}
-			List<PathElement> pe = new ArrayList<PathElement>();
-			pe = i.getPathElements();
-			for (PathElement m : pe) {
-				routes.add();
-			}
-		}
-		return null;
-	}
+	       
+        StockroomID start = from.getRoom();
+        StockroomID end = to.getRoom();
+        List<Route> routes = new ArrayList<Route>();
+       
+        List<Path> paths = computePaths(start, end);
+        for (Path i : paths) {
+            Route route = new Route();
+            route.add(from);
+           
+            List<PathElement> pe = new ArrayList<PathElement>();
+            pe = i.getPathElements();
+            for (PathElement m : pe) {
+                Door door = m.getDoor();
+                RoomPointDoor rpDoor = new RoomPointDoor(door);
+                route.add(rpDoor);
+            }
+            routes.add(route);
+        }
+        return routes;
+    }
 	
 	private Position chooseCartArea() {
 	
@@ -81,7 +87,7 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 			//List<StockroomID> stockrooms = new ArrayList<StockroomID>();	// Stockrooms für CartAreas mit ihrer CartPosition
 			List<Path> tempP = new ArrayList<Path>();
 			List<Integer> tempP2 = new ArrayList<Integer>();
-			List<Route> paths = new ArrayList<Route>();
+			List<Route> routes = new ArrayList<Route>();
 			for (CartPosition i : allCartPositions) {
 				// if CART ?
 				StockroomID sID = getRoomFor(i);		//Stockroom für jede CartArea holen
@@ -97,9 +103,11 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 							minIndex = m;
 						}
 					}																	// TODO: weg von tür zur cartarea hinzufügen
-					//tempP.get(minIndex).getPathElements()														
-					paths.add(tempP.get(minIndex));			
-					paths.add(allCartPositions.get(minIndex));
+					//tempP.get(minIndex).getPathElements()
+					Path tempPath = tempP.get(minIndex);
+					tempPath.
+					routes.add(tempP.get(minIndex));			
+					routes.add(allCartPositions.get(minIndex));
 				}
 				//List<Path> f = tempP.get(tempP.size()-1);
 				//Door d = f.getPathElements().getDoors(stockroom).getDoor();	
@@ -122,8 +130,8 @@ public class RouteFinder implements INorthStar, IStockroom, IRouteFinder {
 			CartArea cartArea = order.getCartArea();
 			temp = cartArea.getCartPositions();		// von aktueller CartArea all ihre CartPositions
 			allCartPositions.add(temp.get(0)); // nur erste CartPosition in CartArea betrachten
-			StockroomID sID = getRoomFor(temp.get(arg0));
-			//tempP = computePaths(currentStockroom, sID);	// alle Wege zum Stockroom
+			StockroomID sID = getRoomFor(allCartPositions);
+			tempP = computePaths(currentStockroom, sID);	// alle Wege zum Stockroom
 			tempP.add(allCartPositions);
 			//tempP.add(computePaths(currentStockroom, sID));	
 			
