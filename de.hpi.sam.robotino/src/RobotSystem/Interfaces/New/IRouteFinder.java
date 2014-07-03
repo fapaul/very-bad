@@ -14,9 +14,9 @@ public interface IRouteFinder {
 	List<Route> calculateCartAreaRoutes(Position from);
 	List<Route> calculateCartAreaRoutes(Position from, Order order);
 	List<Route> calculateIssuingPointsRoutes(Position from, Order order);
-	Route calculateExplorationRoute(Position from, Stockroom room);	//StockroomID?
+	Route calculateExplorationRoute(Position from, StockroomID room);	//StockroomID?
 	Route calculateChargingRoute(Position from);
 	Position getPosition();
-	int getDistance(Route route);	
+	double getDistance(Route route);	
 	StockroomID[] getNearRooms();
 }

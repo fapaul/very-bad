@@ -31,7 +31,7 @@ public class RoomPointCartArea extends RoomPoint {
 	 */
 	public RoomPointCartArea(CartArea cartArea)
 	{
-		 carts = cartArea.getCartPositions();
-		 location = (Position)carts.get(0);
+		carts = cartArea.getCartPositions();
+		location = (Position)carts.get(0);
 	}
 }

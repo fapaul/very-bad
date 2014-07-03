@@ -21,7 +21,7 @@ import de.hpi.sam.warehouse.stock.StockroomID;
 import de.cpslab.robotino.*;
 import de.cpslab.robotino.environment.Position;
 
-public class OrderManager implements IRobotExecute, IRouteFinder {
+public class OrderManager implements IRobotExecute {
 // DriverManager, ExplorationManager
 
 	private boolean done;
@@ -37,54 +37,6 @@ public class OrderManager implements IRobotExecute, IRouteFinder {
 	
 	private Route chooseRoute(Route[] routes) {
 	
-		return null;
-	}
-
-	@Override
-	public List<Route> calculateCartAreaRoutes(Position from) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Route> calculateCartAreaRoutes(Position from, Order order) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Route> calculateIssuingPointsRoutes(Position from, Order order) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Route calculateExplorationRoute(Position from, Stockroom room) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Route calculateChargingRoute(Position from) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Position getPosition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int getDistance(Route route) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public StockroomID[] getNearRooms() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
