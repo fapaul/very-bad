@@ -42,7 +42,7 @@ public class OrderManager {
 	public OrderManager(WarehouseRobot r, WarehouseRepresentation wr) {
 		robot = r;
 		rep = wr;
-		dm = new DriveManager(robot);
+		dm = new DriveManager(robot, wr);
 		rf = new RouteFinder(robot, rep);
 		em = new ExplorationManager(r, this.rep);
 	}
@@ -75,11 +75,11 @@ public class OrderManager {
 		// Get the cart
 		CartSource fistCartArea =  (CartSource) firstAreaRoute.getRoomPoints().get(firstAreaRoute.getRoomPoints().size()-1);
 		currentCart = fistCartArea.interact(null, robot);
+		
 		dm.setCurCart(currentCart);
 		System.out.println("test");
 		int item = 0;
 		for (Route route : issuingPointRoutes) {
-			
 			dm.drive(route);
 			// Get the last point an interact with the issuing point
 			Position pos = route.getRoomPoints().get(route.getRoomPoints().size()-1).getLocation();

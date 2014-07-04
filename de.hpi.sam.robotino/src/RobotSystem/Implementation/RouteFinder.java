@@ -207,31 +207,34 @@ public class RouteFinder implements IRouteFinder {
 		
 		List<Door> roomDoors = representation.getDoors(room);
 		RoomPoint fromPoint = new RoomPoint(from);
-		//Choose next door
-		List<Route> routesToRoom = new LinkedList<Route>();
-		for(Door d : roomDoors) {
-		//	if(fromPoint.getRoom().equals((new RoomPointDoor(d)).getRoom()))
-		//		continue;
-			Route r = getShortestRoute(calculateSubRoutes(fromPoint, new RoomPointDoor(d)));
-			if(r == null)
-				// Don't add empty route
-				continue;
-			routesToRoom.add(r);
-		}
-		//System.out.println("calcExpRoute2 "  + routesToRoom.size());
-		if(routesToRoom.size() == 0)
-			return null;
-		//Route explRoute = getShortestRoute(routesToRoom);
 		Route explRoute = new Route();
+		//Choose door
+		
+		
+		//System.out.println("calcExpRoute2 "  + routesToRoom.size());
+		//Route explRoute = getShortestRoute(routesToRoom);
+		/*
 		for(Route r : routesToRoom){
 			for(RoomPoint rp : r.getRoomPoints()){
 				explRoute.add(rp);
 			}
-		}
+		}*/
 		// Check which issuing points are in 
 		for(IssuingPoint ip: stockMang.getAllIssueingPoints())
 			if(room == representation.getRoomFor(ip))
-				explRoute.add(new RoomPoint(ip));
+				explRoute.add(new RoomPointIssuingPoint(ip));
+		RoomPoint before = new RoomPoint(stockMang.getAllIssueingPoints().get(stockMang.getAllIssueingPoints().size()-1));
+		for(Door d : roomDoors) {
+			//	if(fromPoint.getRoom().equals((new RoomPointDoor(d)).getRoom()))
+			//		continue;
+				Route r = getShortestRoute(calculateSubRoutes(before, new RoomPointDoor(d)));
+				if(r == null)
+					// Don't add empty route
+					continue;
+				before = new RoomPointDoor(d);
+				explRoute.concat(r);
+			}
+		//routesToRoom.add(explRoute);
 		return explRoute;
 	}
 

@@ -46,11 +46,6 @@ public class RobotManager extends Thread {
 	}
 	
 	private void updateLoop() {
-		// If WLAN is available we can share informaitons
-	//	for(CommunicationID other : wareRobot.scanForCommunicationPartnerInRange()) {
-	//		wareRobot.requestAndMergeExplorationInfo(wareRobot.getRoomFor(wareRobot.getCurrentPosition()), new RobotinoID(other.));
-	//	}
-		
 		if(!robComm.hasMessage()) {
 			// If nothing to do start the exploration
 			exploreMang.explorationStart();

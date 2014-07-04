@@ -46,16 +46,16 @@ public class Simulation
 		robot1.register();
 		robot1.setBehavior(new RobotBehavior(robot1));
 		
-		//WarehouseRobot robot2 = new WarehouseRobot(new RobotinoID("Robot 2", "127.0.0.1:8081"));
-		//robot2.setBehavior(new RobotBehavior(robot2));
+		WarehouseRobot robot2 = new WarehouseRobot(new RobotinoID("Robot 2", "127.0.0.1:8081"));
+		robot2.register();
+		robot2.setBehavior(new RobotBehavior(robot2));
 		// Register at server
 		
 		wm.addRobot(robot1);
-		//wm.addRobot(robot2);
+		wm.addRobot(robot2);
 
 		robot1.connectToSimulator();
-		
-		//robot2.connectToSimulator();
+		robot2.connectToSimulator();
 		try
 		{
 			/*
@@ -72,6 +72,6 @@ public class Simulation
 		ServerManager servMan = new ServerManager();
 		robot1.start();
 		
-	//	robot2.start();
+		robot2.start();
 	}
 }

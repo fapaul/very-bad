@@ -2,6 +2,8 @@ package RobotSystem.Implementation;
 
 //import RobotExecute.RobotExecute.*;
 import Datatypes.Added.RoomPoint;
+import Datatypes.Added.RoomPointDoor;
+import Datatypes.Added.RoomPointIssuingPoint;
 import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IDriveManager;
 import de.cpslab.robotino.actuator.interfaces.IRobotinoWheels;
@@ -9,16 +11,20 @@ import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.stock.Cart;
+import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
 public class DriveManager implements IDriveManager { // = IDrive
 
 	private boolean bumped;
 	private WarehouseRobot robot = null;
+	private WarehouseRepresentation repres = null;
 	private Order curOrder = null;
 	private Cart curCart = null;
 	
-	public DriveManager(WarehouseRobot r) {
+	
+	public DriveManager(WarehouseRobot r, WarehouseRepresentation repres) {
 		robot = r;
+		this.repres = repres;
 	}
 	
 	public Order getCurOrder() {
@@ -41,10 +47,26 @@ public class DriveManager implements IDriveManager { // = IDrive
 	public void drive(Route route) {
 		// Driving route
 		for (RoomPoint point : route.getRoomPoints()) {
-			if(curCart != null)
+			if(curCart != null) 
 				robot.transportToPositionAvoidingObstacles(point.getLocation());
 			else
 				robot.driveToPositionAvoidingObstacles(point.getLocation());
+			// Note the driven to points as explored
+			try {
+				// check if RoomPoint is a door
+				RoomPointDoor door = (RoomPointDoor) point;
+				repres.doorExplored(door.getDoor());
+			}
+			catch (ClassCastException e) { 
+			try {
+				// check if RoomPoint is an issuingPoint
+				RoomPointIssuingPoint issuingPoint = (RoomPointIssuingPoint) point;
+				repres.issuingPointExplored(issuingPoint.getIssuingPoint());
+			}
+			catch (ClassCastException c) { 
+				System.out.println("Found unprocessed roompoint");
+			}
+			}
 		}
 	}
 

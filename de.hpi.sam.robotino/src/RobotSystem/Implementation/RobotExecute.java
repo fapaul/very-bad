@@ -32,7 +32,7 @@ public class RobotExecute implements IRobotExecute{
 
 		this.robot = r;
 		this.representation = wr;
-		dm = new DriveManager(r);
+		dm = new DriveManager(r, wr);
 		cm = new ChargingManager();
 		em = new ExplorationManager(r, wr);
 		om = new OrderManager(r,  wr);
