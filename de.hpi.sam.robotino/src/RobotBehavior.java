@@ -1,106 +1,40 @@
-import java.util.ArrayList;
-import java.util.List;
-
+import Datatypes.Added.StateType;
+import Datatypes.Added.StatusMessage;
+import RobotSystem.Implementation.RobotCommunication;
 import de.hpi.sam.warehouse.Server;
 import de.hpi.sam.warehouse.WarehouseRobot;
-import de.hpi.sam.warehouse.stock.StockroomID;
-import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
-import Datatypes.Added.CartSource;
-import Datatypes.Added.RoomPoint;
-import Datatypes.Added.Route;
-import RobotSystem.Implementation.*;
-import de.cpslab.robotino.environment.Position;
-import de.cpslab.robotino.sensor.interfaces.*;
-import de.hpi.sam.warehouse.stock.*;
 
 public class RobotBehavior implements Runnable
 {
-
 	WarehouseRobot	robot;
 
 	public RobotBehavior(WarehouseRobot robot)
 	{
 		this.robot = robot;
+		
+		RobotCommunication robotCom = new RobotCommunication(this.robot);
+		robotCom.sendRobotRegistration(robot.getID());	
 	}
 
 	@Override
 	public void run()
 	{
-		// TODO Implement the behavior of the robots
-		System.out.println(this.robot.getID().getName() + " Starting...");
-		WarehouseRepresentation wr = new WarehouseRepresentation();
-		// Test from Jakob		
-		
-	//	RouteFinder rf = new RouteFinder(this.robot,  wr);
-	//	Position pos = rf.getPosition();
-	//	DriveManager driveMan = new DriveManager(this.robot);	
-	System.out.println("test " + robot.getCurrentPosition().getXPosition() + "\t" + robot.getCurrentPosition().getZPosition());
-	OrderManager orderMang = new OrderManager(robot, wr);
-	
-	System.out.println(this.robot.getID().getName() + " needs " + orderMang.calculateOrderTime(Server.INSTANCE.getOrderList().get(0)).getTime() /1000 + " seconds");
-	orderMang.orderStart(Server.INSTANCE.getOrderList().get(0));
-	//	StockroomID sID = wr.getRoomFor(robot.getCurrentPosition());
-	//	System.out.println("Stockroom is:" + sID.getID().toString());
-	//	StockroomManagement StockManager = StockroomManagement.INSTANCE;
-	//	List<CartArea> Areas = StockManager.getCartAreas(); 
-		
-	//	CartArea Area = Areas.get(0); 
-	//	int AreaPosX = Area.getCartPositions().get(0).getXPosition();
-	//	int AreaPosY = Area.getCartPositions().get(0).getZPosition();
-	//Position AreaPos = new Position(AreaPosX, AreaPosY); 
-		
-		//System.out.println(robot.getCurrentPosition().getXPosition());
-		//driveMan.drive(AreaPos);
-		//System.out.println(robot.getCurrentPosition().getXPosition());
-		///CartPosition CartPos = Area.getCartPositions().get(0);
-		//this.robot.takeCart(CartPos);
-		//StockroomID stock = wr.getRoomFor((Position) CartPos); 
-		//CartSource src = new CartSource(Area, stock);
-		//src.interact(null , this.robot); 
-		//System.out.println("yeeah");
-		//driveMan.drive(new Position(100, 100));
-		//System.out.println("after drive");
+		StatusMessage mess = new StatusMessage(StateType.message.ROBOT_REGISTER);
 
-// Test from Ajay
-	/*
-	RouteFinder rf = new RouteFinder(this.robot,  wr);
-		Position pos = rf.getPosition();
-		DriveManager driveMan = new DriveManager(this.robot);	
-	System.out.println("test " + robot.getCurrentPosition().getXPosition() + "\t" + robot.getCurrentPosition().getZPosition());
-		StockroomID sID = wr.getRoomFor(robot.getCurrentPosition());
-		System.out.println("Stockroom is:" + sID.getID().toString());
-		StockroomManagement StockManager = StockroomManagement.INSTANCE;
-		List<CartArea> Areas = StockManager.getCartAreas(); 
-		
-		CartArea Area = Areas.get(0); 
-		int AreaPosX = Area.getCartPositions().get(0).getXPosition();
-		int AreaPosY = Area.getCartPositions().get(0).getZPosition();
-		Position AreaPos = new Position(AreaPosX, AreaPosY); 
-		
-		System.out.println(robot.getCurrentPosition().getXPosition());
-		driveMan.drive(AreaPos);
-		//System.out.println(robot.getCurrentPosition().getXPosition());
-		CartPosition CartPos = Area.getCartPositions().get(0);
-		//this.robot.takeCart(CartPos);
-		StockroomID stock = wr.getRoomFor((Position) CartPos); 
-		CartSource src = new CartSource(Area);
-		src.interact(null , this.robot); 
-		System.out.println("yeeah");
-		driveMan.drive(new Position(100, 100));
-		System.out.println("after drive");
-		*/
 		while (!this.robot.isBumperActivated())
 		{
-			try
-			{
+			System.out.println("Sender ID: " + robot.getCommunicationID().getID() + ", Server ID: " + Server.serverID.getID());
+			this.robot.sendMessage(Server.serverID, mess);
+			System.out.println("Sending ...");
+			try {
 				Thread.sleep(1000);
 			}
-			catch (InterruptedException e)
-			{
+			catch (InterruptedException e) {
 				this.robot.brake();
 			}
 		}
+		
 		this.robot.brake();
-		System.out.println(this.robot.getID().getName() + " done.");
+		System.out.println(this.robot.getID().getName() + " bumped.");
 	}
 }

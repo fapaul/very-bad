@@ -7,6 +7,7 @@ import Datatypes.Added.StateType;
 import Datatypes.Added.StateType.robot;
 import Datatypes.Added.StatusMessage;
 import de.cpslab.robotino.RobotinoID;
+import de.cpslab.robotino.actuator.communication.CommunicationID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.WarehouseRobot;
@@ -14,30 +15,25 @@ import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
 
-public class RobotManager extends Thread{
-
-
+public class RobotManager extends Thread {
 	private int BATTERYTHRESHOLD;
-	private RobotinoID id;
 	private Order currentOrder;
-	private Position curentPos;
 	private OrderManager orderManager;
-	private ExplorationManager explorationManager;
-	private	ChargingManager chargingManager;
+	private ExplorationManager exploreMang;
 	private RobotCommunication robComm;
 	private WarehouseRobot wareRobot;
-	private WarehouseRepresentation resp;
+	private WarehouseRepresentation repre;
 	private StateType.robot status;
 	int MAX_MESSAGE_ONCE = 20;
-	int MAX_ORDER_ONCE = 20;
 	
 	boolean running = false;
 	
 	public RobotManager(WarehouseRobot warehouseRobot){
 		status = robot.IDLE;
 		wareRobot = warehouseRobot;
-		resp = new WarehouseRepresentation();
-		
+		repre = new WarehouseRepresentation();
+		orderManager = new OrderManager(warehouseRobot, repre);
+		exploreMang = new ExplorationManager(wareRobot, repre);
 	}
 	
 	public boolean isRunning(){
@@ -50,10 +46,19 @@ public class RobotManager extends Thread{
 	}
 	
 	private void updateLoop() {
+		// If WLAN is available we can share informaitons
+	//	for(CommunicationID other : wareRobot.scanForCommunicationPartnerInRange()) {
+	//		wareRobot.requestAndMergeExplorationInfo(wareRobot.getRoomFor(wareRobot.getCurrentPosition()), new RobotinoID(other.));
+	//	}
 		
-		for (int i = 0; i < MAX_MESSAGE_ONCE && robComm.hasMessage();i++){
-			handleMessage(robComm.readMessage());
+		if(!robComm.hasMessage()) {
+			// If nothing to do start the exploration
+			exploreMang.explorationStart();
 		}
+		else
+			for (int i = 0; i < MAX_MESSAGE_ONCE && robComm.hasMessage();i++){
+				handleMessage(robComm.readMessage());
+			}
 		
 	}
 	
@@ -67,29 +72,47 @@ public class RobotManager extends Thread{
 			Date duration = orderManager.calculateOrderTime(order);
 			robComm.sendOrderTime(duration);
 			break;
-		
 		case SERVER_POSITION:
 			Position position = wareRobot.getCurrentPosition();
 			robComm.sendPosition(position);
 			break;
-		
 		case SERVER_SLEEP:
+			this.status = robot.SLEEPING;
 			setStatus(robot.SLEEPING);
 			break;
-		
 		case SERVER_ORDER:
+			this.status = robot.EXECUTING;
 			orderManager.orderStart(currentOrder);
+			this.status = robot.IDLE;
 			break;
-		
 		case SERVER_WAKEUP:
 			setStatus(robot.IDLE);
 			startRobot();
 			break;
-			
 		default:
 			break;
 			
 		}
+	}
+	
+	@Override
+	public void run() {
+		// Calls the update loop and idles the thread for a while
+		
+		while(running) {
+			updateLoop();
+			
+			try
+			{
+				Thread.sleep(200);
+			}
+			catch (InterruptedException e)
+			{
+				System.out.println("Error while Robot " + wareRobot.getID() + " was waiting");
+				running = false;
+			}
+		}
+		
 	}
 	
 	private StateType.robot getStatus() {

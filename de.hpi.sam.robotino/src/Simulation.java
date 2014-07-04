@@ -1,3 +1,4 @@
+import ServerSystem.Implementation.ServerManager;
 import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.log.RobotLogger;
 import de.hpi.sam.warehouse.Server;
@@ -31,9 +32,12 @@ public class Simulation
 	{
 		WarehouseManagement wm = WarehouseManagement.INSTANCE;
 		StockroomManagement sm = StockroomManagement.INSTANCE;
+		ServerManager servMan = new ServerManager();
 		Server serv = Server.INSTANCE;
+		serv.register();
 		
 		System.out.println("Server has already " + serv.getOrderList().size() + " orders");
+		
 		
 		// RobotLogger.setGlobalLogLevel("OFF");
 		RobotLogger.setGlobalLogLevel("ALL");
@@ -42,16 +46,16 @@ public class Simulation
 		WarehouseRobot robot1 = new WarehouseRobot(new RobotinoID("Robot 1", "127.0.0.1:8080"));
 		robot1.register();
 		robot1.setBehavior(new RobotBehavior(robot1));
-
+		
 		//WarehouseRobot robot2 = new WarehouseRobot(new RobotinoID("Robot 2", "127.0.0.1:8081"));
 		//robot2.setBehavior(new RobotBehavior(robot2));
 		// Register at server
-		
 		
 		wm.addRobot(robot1);
 		//wm.addRobot(robot2);
 
 		robot1.connectToSimulator();
+		
 		//robot2.connectToSimulator();
 		try
 		{
@@ -65,8 +69,10 @@ public class Simulation
 		{
 			return;
 		}
-
+		
+		
 		robot1.start();
+		
 	//	robot2.start();
 	}
 }

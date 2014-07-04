@@ -49,7 +49,10 @@ public class ExplorationManager implements IExplorationManager {
 	public void explorationStart(StockroomID room) {
 		Route route = rf.calculateExplorationRoute(rf.getPosition(), room);
 		List<RoomPoint> rp = route.getRoomPoints();
-		
+		System.out.printf("\nRoompoint-Anzahl ist: %d\n", rp.size());
+		for (RoomPoint r : rp) {
+			System.out.println(r.getLocation().getXPosition());
+		}
 		for (RoomPoint r : rp) {
 			dm.drive(r.getLocation());			// TODO checken
 		}

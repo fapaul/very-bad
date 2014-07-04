@@ -1,8 +1,10 @@
 package ServerSystem.Implementation;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,19 +12,23 @@ import java.util.Set;
 
 import Datatypes.Added.StateType;
 import Datatypes.Added.StatusMessage;
+import RobotSystem.Implementation.OrderManager;
 import de.cpslab.robotino.RobotinoID;
+import de.cpslab.robotino.actuator.communication.CommunicationID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.Server;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.order.OrderManagement;
 
 public class ServerManager extends Thread {
 
-	OrderManagement 	orderManager;
+	OrderManagement 	orderManagemet;
 	ServerCommunication serverComm;
 	Position robotPos;
 	StateType.robot robotState;
 	Date orderTime;
+	Server server;
 	// Maximum number of messages and orders worked at at once
 	int MAX_MESSAGE_ONCE = 20;
 	int MAX_ORDER_ONCE = 20;
@@ -36,8 +42,14 @@ public class ServerManager extends Thread {
 	public ServerManager() {
 		pendingOrders = new HashSet<Order>();
 		inprogressOrders = new HashSet<Order>();
+		serverComm = new ServerCommunication();
+		orderManagemet = new OrderManagement(); 
+		server = Server.INSTANCE;
+		robots = new ArrayList<RobotinoID>(); 
+		
 		startServer();
 	}
+	
 	
 	public boolean isRunning() {
 		return running;
@@ -61,10 +73,12 @@ public class ServerManager extends Thread {
 			//finalize order progressing
 			Order curOrder = (Order)servMess.getContent();
 			inprogressOrders.remove(curOrder);
+			System.out.println("Order from " + curOrder.getDate() + " finished");
 			break;
-
-		case ROBOT_CHARGING:
-//			//TODO perhaps remove ROBOT_CHARGING
+		case ROBOT_REGISTER:
+			RobotinoID robot = (RobotinoID) servMess.getContent();
+			System.out.println("Registered Robot " + robot.getID() + " at server");
+			robots.add(robot);
 			break;
 		case SERVER_WAKEUP:
 			startServer();
@@ -99,7 +113,7 @@ public class ServerManager extends Thread {
 	
 	void fetchOrders() {
 		// If a order is not in progress it must be pending
-		for(Order order : orderManager.getOrderList()) {
+		for(Order order : orderManagemet.getOrderList()) {
 			if(!inprogressOrders.contains(order))
 				pendingOrders.add(order);
 		}
@@ -107,6 +121,7 @@ public class ServerManager extends Thread {
 
 	void updateLoop() {
 		 // Check all messages
+		System.out.println("there are any new Messages " + (serverComm.hasMessage()));
 		for (int i = 0; i < MAX_MESSAGE_ONCE && serverComm.hasMessage(); i++) {
 			handleMessage(serverComm.readMessage());
 		}
