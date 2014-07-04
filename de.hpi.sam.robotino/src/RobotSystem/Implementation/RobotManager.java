@@ -24,9 +24,9 @@ public class RobotManager extends Thread {
 	private WarehouseRobot wareRobot;
 	private WarehouseRepresentation repre;
 	private StateType.robot status;
-	int MAX_MESSAGE_ONCE = 20;
+	private final int MAX_MESSAGE_ONCE = 20;
 	
-	boolean running = false;
+	private boolean running = false;
 	
 	public RobotManager(WarehouseRobot warehouseRobot){
 		status = robot.IDLE;

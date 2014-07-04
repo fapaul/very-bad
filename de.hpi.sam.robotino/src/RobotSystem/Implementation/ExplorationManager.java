@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import Datatypes.Added.RoomPoint;
+import Datatypes.Added.RoomPointDoor;
+import Datatypes.Added.RoomPointIssuingPoint;
 import Datatypes.Added.Route;
 import RobotSystem.Implementation.RouteFinder;
 import RobotSystem.Interfaces.New.IExplorationManager;
@@ -12,6 +14,7 @@ import RobotSystem.Interfaces.New.IRobotExecute;
 import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.environment.IWarehouseEnvironment;
 import de.hpi.sam.warehouse.order.Order;
+import de.hpi.sam.warehouse.stock.Door;
 import de.hpi.sam.warehouse.stock.StockroomID;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
@@ -29,10 +32,7 @@ public class ExplorationManager implements IExplorationManager {
 		this.robot = robot;
 		rf = new RouteFinder(robot, representation);
 		dm = new DriveManager(robot);
-		representation = new WarehouseRepresentation();
-		this.representation = representation;
-		rf = new RouteFinder(robot, representation);
-		
+		this.representation = representation;		
 	}
 	
 	public Date calculateExplorationTime(StockroomID room) {
@@ -55,11 +55,26 @@ public class ExplorationManager implements IExplorationManager {
 		}
 		for (RoomPoint r : rp) {
 			dm.drive(r.getLocation());			// TODO checken
+			
+			// save exploration status
+			try {
+				// check if RoomPoint is a door
+				RoomPointDoor door = (RoomPointDoor)r;
+				representation.doorExplored(door.getDoor());
+			}
+			catch (Exception e) { }
+			try {
+				// check if RoomPoint is an issuingPoint
+				RoomPointIssuingPoint issuingPoint = (RoomPointIssuingPoint)r;
+				representation.issuingPointExplored(issuingPoint.getIssuingPoint());
+			}
+			catch (Exception e) { }
+			
 		}
 	}
 	
 	public boolean isExplored(StockroomID room) {
-		return representation.getExplorationStatus(room) == 100;
+		return robot.getExplorationStatus(room) == 100;
 	}
 
 	
