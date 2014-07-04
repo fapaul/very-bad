@@ -57,6 +57,7 @@ public class RobotManager extends Thread {
 		}
 		else
 			for (int i = 0; i < MAX_MESSAGE_ONCE && robComm.hasMessage();i++){
+				System.out.println("got message");
 				handleMessage(robComm.readMessage());
 			}
 		

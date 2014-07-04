@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Queue;
 
 import Datatypes.Added.StateType;
-import Datatypes.Added.StateType.message;
 import Datatypes.Added.StatusMessage;
 import RobotSystem.Interfaces.New.IRobotCommunication;
 import de.cpslab.robotino.RobotinoID;
@@ -42,7 +41,6 @@ public class RobotCommunication implements IRobotCommunication {
 				}else{
 					warehouseRobot.requestAndMergeExplorationInfo(explorableStockrooms.get(j), (RobotinoID)robots.get(i));
 				}
-
 			}
 		}
 	}
@@ -99,7 +97,7 @@ public class RobotCommunication implements IRobotCommunication {
 	}
 	
 	public void fetchMessage(){
-		incoming.addAll(robotComm.receiveMessages());
+		incoming.addAll(warehouseRobot.receiveMessages());
 	}
 
 }

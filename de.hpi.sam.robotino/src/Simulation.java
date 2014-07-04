@@ -32,7 +32,6 @@ public class Simulation
 	{
 		WarehouseManagement wm = WarehouseManagement.INSTANCE;
 		StockroomManagement sm = StockroomManagement.INSTANCE;
-		ServerManager servMan = new ServerManager();
 		Server serv = Server.INSTANCE;
 		serv.register();
 		
@@ -70,7 +69,7 @@ public class Simulation
 			return;
 		}
 		
-		
+		ServerManager servMan = new ServerManager();
 		robot1.start();
 		
 	//	robot2.start();
