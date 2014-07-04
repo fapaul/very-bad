@@ -22,6 +22,10 @@ public class RoomPointIssuingPoint extends RoomPoint {
 		return itemsToTake;
 	}
 	
+	public IssuingPoint getIssuingPoint() {
+		return point;
+	}
+	
 	@Override
 	public Cart interact(Cart cart, WarehouseRobot robot) {
 		robot.load(itemsToTake, point, cart);
