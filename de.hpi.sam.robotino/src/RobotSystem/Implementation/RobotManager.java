@@ -26,7 +26,6 @@ public class RobotManager extends Thread{
 	private	ChargingManager chargingManager;
 	private RobotCommunication robComm;
 	private WarehouseRobot wareRobot;
-	private WarehouseRepresentation resp;
 	private StateType.robot status;
 	int MAX_MESSAGE_ONCE = 20;
 	int MAX_ORDER_ONCE = 20;
@@ -36,8 +35,6 @@ public class RobotManager extends Thread{
 	public RobotManager(WarehouseRobot warehouseRobot){
 		status = robot.IDLE;
 		wareRobot = warehouseRobot;
-		resp = new WarehouseRepresentation();
-		
 	}
 	
 	public boolean isRunning(){

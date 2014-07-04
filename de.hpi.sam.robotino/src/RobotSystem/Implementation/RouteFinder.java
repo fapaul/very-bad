@@ -27,7 +27,7 @@ public class RouteFinder implements IRouteFinder {
 	private Position CHARGINGSTATION;
 	private Position destinationPosition;
 	private WarehouseRobot robot;
-	private WarehouseRepresentation representation = new WarehouseRepresentation();
+	private WarehouseRepresentation representation;
 	private StockroomManagement 	stockMang = StockroomManagement.INSTANCE;
 	
 	public RouteFinder(WarehouseRobot robot, WarehouseRepresentation rep) {
@@ -199,7 +199,7 @@ public class RouteFinder implements IRouteFinder {
 	 */
 	@Override
 	public Route calculateExplorationRoute(Position from, StockroomID room) {
-		if(representation.getExplorationStatus(room) == 100)
+		if(this.robot.getExplorationStatus(room) == 100)
 			return new Route();
 		//System.out.println("calcExpRoute");
 		
@@ -219,7 +219,13 @@ public class RouteFinder implements IRouteFinder {
 		//System.out.println("calcExpRoute2 "  + routesToRoom.size());
 		if(routesToRoom.size() == 0)
 			return null;
-		Route explRoute = getShortestRoute(routesToRoom);
+		//Route explRoute = getShortestRoute(routesToRoom);
+		Route explRoute = new Route();
+		for(Route r : routesToRoom){
+			for(RoomPoint rp : r.getRoomPoints()){
+				explRoute.add(rp);
+			}
+		}
 		// Check which issuing points are in 
 		for(IssuingPoint ip: stockMang.getAllIssueingPoints())
 			if(room == representation.getRoomFor(ip))

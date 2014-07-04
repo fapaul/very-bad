@@ -29,10 +29,7 @@ public class ExplorationManager implements IExplorationManager {
 		this.robot = robot;
 		rf = new RouteFinder(robot, representation);
 		dm = new DriveManager(robot);
-		representation = new WarehouseRepresentation();
-		this.representation = representation;
-		rf = new RouteFinder(robot, representation);
-		
+		this.representation = representation;		
 	}
 	
 	public Date calculateExplorationTime(StockroomID room) {
@@ -56,7 +53,7 @@ public class ExplorationManager implements IExplorationManager {
 	}
 	
 	public boolean isExplored(StockroomID room) {
-		return representation.getExplorationStatus(room) == 100;
+		return robot.getExplorationStatus(room) == 100;
 	}
 
 	
