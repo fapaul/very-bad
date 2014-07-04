@@ -9,7 +9,7 @@ import de.hpi.sam.warehouse.WarehouseRobot;
 
 public class CartDestination extends RoomPointCartArea {
 
-	WarehouseRobot warehouseRobot = new WarehouseRobot(new RobotinoID("000.000.000.000"));
+	WarehouseRobot warehouseRobot;
 
 	public CartDestination(CartArea cartArea) {
 		super(cartArea);
@@ -20,6 +20,7 @@ public class CartDestination extends RoomPointCartArea {
 	
 	@Override
 	public Cart interact(Cart cart,  WarehouseRobot robot){
+		this.warehouseRobot = robot;
 		if (carts.size() < 1)
 			return null;
 		warehouseRobot.returnCart(cart, carts.get(0));
