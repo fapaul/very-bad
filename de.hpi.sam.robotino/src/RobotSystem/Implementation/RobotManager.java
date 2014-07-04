@@ -70,25 +70,28 @@ public class RobotManager extends Thread {
 	
 	private void handleMessage(StatusMessage message) {
 		switch (message.getTypeOfMessage()) {
+		case SERVER_STATUS:
+			robComm.sendRobotStatus(getStatus());
+			break;
 		case SERVER_ORDERTIME:
 			currentOrder = (Order)message.getContent();
 			Date duration = orderManager.calculateOrderTime(currentOrder);
 			robComm.sendOrderTime(duration);
 			break;
-		case SERVER_POSITION:
-			Position position = wareRobot.getCurrentPosition();
-			robComm.sendPosition(position);
-			break;
-		case SERVER_SLEEP:
-			setStatus(robot.SLEEPING);
-			break;
 		case SERVER_ORDER:
 			setStatus(robot.EXECUTING);
 			orderManager.orderStart(currentOrder);
 			break;
+		case SERVER_SLEEP:
+			setStatus(robot.SLEEPING);
+			break;
 		case SERVER_WAKEUP:
 			setStatus(robot.IDLE);
 			startRobot();
+			break;
+		case SERVER_POSITION:
+			Position position = wareRobot.getCurrentPosition();
+			robComm.sendPosition(position);
 			break;
 		default:
 			break;

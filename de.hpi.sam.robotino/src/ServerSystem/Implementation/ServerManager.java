@@ -55,16 +55,16 @@ public class ServerManager extends Thread {
 
 	void handleMessage(StatusMessage message) {
 		switch (message.getTypeOfMessage()) {
+		case ROBOT_REGISTER:
+			RobotinoID robot = (RobotinoID)message.getContent();
+			robots.add(robot);
+			System.out.println("Registered " + robot.getName() + ".");
+			break;
 		case ROBOT_FINISH:
 			Order order = (Order)message.getContent();
 			inprogressOrders.remove(order);
 			orderManagemet.finishOrder(order, order.getCartArea().getCartPositions().get(0)); // Let robot send final cart position instead
 			System.out.println("Finished an order.");
-			break;
-		case ROBOT_REGISTER:
-			RobotinoID robot = (RobotinoID)message.getContent();
-			robots.add(robot);
-			System.out.println("Registered robot at server.");
 			break;
 		case SERVER_WAKEUP:
 			startServer();

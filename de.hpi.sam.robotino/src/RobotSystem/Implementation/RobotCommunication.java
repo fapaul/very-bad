@@ -46,30 +46,35 @@ public class RobotCommunication implements IRobotCommunication {
 	public void sendRobotRegistration() {
 		StatusMessage message = new StatusMessage(StateType.message.ROBOT_REGISTER, robot.getCommunicationID());
 		robot.sendMessage(server, message);
+		System.out.println(robot.getID().getName() + " received a ROBOT_REGISTER message.");
 	}
 	
 	@Override
 	public void sendRobotStatus(StateType.robot status) {
 		StatusMessage message = new StatusMessage(StateType.message.ROBOT_STATUS, status);
-		robot.sendMessage(server, message);	
+		robot.sendMessage(server, message);
+		System.out.println(robot.getID().getName() + " received a ROBOT_STATUS message.");
 	}
 
 	@Override
 	public void sendOrderTime(Date duration) {
 		StatusMessage message = new StatusMessage(StateType.message.ROBOT_ORDERTIME, duration);
-		robot.sendMessage(server, message);		
+		robot.sendMessage(server, message);
+		System.out.println(robot.getID().getName() + " received a ROBOT_ORDERTIME message.");
 	}
 	
 	@Override
 	public void sendPosition(Position position) {
 		StatusMessage message = new StatusMessage(StateType.message.ROBOT_POSITION, position);
 		robot.sendMessage(server, message);
+		System.out.println(robot.getID().getName() + " a ROBOT_POSITION message.");
 	}
 
 	@Override
 	public void sendOrderFinish(Order order) {
 		StatusMessage message = new StatusMessage(StateType.message.ROBOT_FINISH, order);
 		robot.sendMessage(server, message);
+		System.out.println(robot.getID().getName() + " a ROBOT_FINISH message.");
 	}
 
 	@Override
@@ -81,10 +86,11 @@ public class RobotCommunication implements IRobotCommunication {
 	public boolean hasMessage() { 
 		List<Message> messages = robot.receiveMessages();
 		if (messages.size() > 0) {
-			System.out.println("Robot received a message.");
 			for (Message message : messages) {
 				try {
-					incoming.add((StatusMessage)message);
+					StatusMessage casted = (StatusMessage)message;
+					incoming.add(casted);
+					System.out.println(robot.getID().getName() + " received a " + casted.getTypeOfMessage().name() + " message.");
 				}
 				catch (Exception e) {
 					System.out.println("Robot received invalid message. " + e);

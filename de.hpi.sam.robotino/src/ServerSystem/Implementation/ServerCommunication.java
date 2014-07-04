@@ -24,6 +24,7 @@ public class ServerCommunication implements  IServerCommunication {
 		// Send request
 		StatusMessage message = new StatusMessage(StateType.message.SERVER_STATUS);
 		server.sendMessage(robot, message);
+		System.out.println("Server sent a SERVER_STATUS message to " + robot.getName() + ".");
 
 		// Receive answer
 		while (!hasMessage(StateType.message.ROBOT_STATUS));
@@ -43,6 +44,7 @@ public class ServerCommunication implements  IServerCommunication {
 		// Send request
 		StatusMessage message = new StatusMessage(StateType.message.SERVER_ORDERTIME, order);
 		server.sendMessage(robot, message);
+		System.out.println("Server sent a SERVER_ORDERTIME message to " + robot.getName() + ".");
 		
 		// Receive answer
 		while (!hasMessage(StateType.message.ROBOT_ORDERTIME));
@@ -62,6 +64,7 @@ public class ServerCommunication implements  IServerCommunication {
 		// Send request
 		StatusMessage request = new StatusMessage(StateType.message.SERVER_POSITION);
 		server.sendMessage(robot, request);
+		System.out.println("Server sent a SERVER_POSITION message to " + robot.getName() + ".");
 		
 		// Receive answer
 		while (!hasMessage(StateType.message.ROBOT_POSITION));
@@ -80,28 +83,32 @@ public class ServerCommunication implements  IServerCommunication {
 	public void sendSleep(RobotinoID robot) {
 		StatusMessage message = new StatusMessage(StateType.message.SERVER_SLEEP);
 		server.sendMessage(robot , message);
+		System.out.println("Server sent a SERVER_SLEEP message to " + robot.getName() + ".");
 	}
 
 	@Override
 	public void sendWakeup(RobotinoID robot) {
 		StatusMessage message = new StatusMessage(StateType.message.SERVER_WAKEUP);
 		server.sendMessage(robot, message);
+		System.out.println("Server sent a SERVER_WAKEUP message to " + robot.getName() + ".");
 	}
 
 	@Override
 	public void sendOrderStart(RobotinoID robot) {
 		StatusMessage message = new StatusMessage(StateType.message.SERVER_ORDER);
 		server.sendMessage(robot, message);
+		System.out.println("Server sent a SERVER_ORDER message to " + robot.getName() + ".");
 	}
 
 	@Override
 	public boolean hasMessage() { 
 		List<Message> messages = server.receiveMessages();
 		if (messages.size() > 0) {
-			System.out.println("Server received a message.");
 			for (Message message : messages) {
 				try {
-					incoming.add((StatusMessage)message);
+					StatusMessage casted = (StatusMessage)message;
+					incoming.add(casted);
+					System.out.println("Server received a " + casted.getTypeOfMessage().name() + " message.");
 				}
 				catch (Exception e) {
 					System.out.println("Server received invalid message. " + e);
@@ -116,8 +123,8 @@ public class ServerCommunication implements  IServerCommunication {
 		List<Message> messages = server.receiveMessages();
 		boolean found = false;
 		if (messages.size() > 0) {
-			System.out.println("Server received a message.");
 			for (Message message : messages) {
+				System.out.println("Server received a " + type.name() + " message.");
 				try {
 					StatusMessage casted = (StatusMessage)message;
 					if (casted.getTypeOfMessage() == type)
