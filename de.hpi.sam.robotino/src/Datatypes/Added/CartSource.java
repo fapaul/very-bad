@@ -26,8 +26,14 @@ public class CartSource extends RoomPointCartArea {
 		this.warehouseRobot = robot;
 		if (carts.size() < 1)
 			return null;
-		CartPosition cartPosition = carts.get(0);
-		carts.remove(0);
+		int counter = 0;
+		while(carts.get(counter) == null && counter < carts.size())
+			counter++;
+		if(counter == carts.size())
+			return null;
+		
+		CartPosition cartPosition = carts.get(counter);
+		carts.remove(counter);
 		return warehouseRobot.takeCart(cartPosition);
 	}
 

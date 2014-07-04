@@ -148,26 +148,28 @@ public class RouteFinder implements IRouteFinder {
 	@Override
 	public List<Route> calculateIssuingPointsRoutes(Position from, Order order) {
 		RoomPoint fromPoint = new RoomPoint(from);
-		RoomPoint cartPoint = new RoomPointCartArea(order.getCartArea());
+		List<Route> allRoutes = new LinkedList<Route>();
+	/*	RoomPoint cartPoint = new RoomPointCartArea(order.getCartArea());
 		List<Route> allRoutes = new LinkedList<Route>();
 		List<Route> possRoutes = calculateSubRoutes(fromPoint, cartPoint);
 		if(possRoutes.size() == 0)
 			return allRoutes;
-		allRoutes.add(getShortestRoute(possRoutes));
+		allRoutes.add(getShortestRoute(possRoutes));*/
 		
 		// Calculate for all the issung points the routes 
-		RoomPoint lastPoint = cartPoint;
-		for(int i = 1; i < order.getOrderItems().size(); i++) {
+		RoomPoint lastPoint = fromPoint;
+		for(int i = 0; i < order.getOrderItems().size(); i++) {
 			OrderItem curItem = order.getOrderItems().get(i);
 			// Calculate the next point to go
 			List<Route> routesToIssuingPoints = new LinkedList<Route>();
 			for(IssuingPoint point : stockMang.getIssuingPoints(curItem.getProductType())) {
-				RoomPoint issueRoomPoint = new RoomPoint(point.getXPosition(), point.getZPosition());
+				RoomPointIssuingPoint issueRoomPoint = new RoomPointIssuingPoint(point);
 				if(issueRoomPoint.equals(lastPoint))
 					continue;
 				
 				Route toIssuePoint = getShortestRoute(calculateSubRoutes(lastPoint, issueRoomPoint));
 				if(toIssuePoint == null)
+					// Do not add empty routes to issuingpoint
 					continue;
 				routesToIssuingPoints.add(toIssuePoint);
 			}
@@ -180,13 +182,11 @@ public class RouteFinder implements IRouteFinder {
 			
 			int lastIndex = bestRouteToIssue.getRoomPoints().size()-1;
 			// Set the last point to be an isssuing point
-			
 			Position pos = bestRouteToIssue.getRoomPoints().get(lastIndex).getLocation();
 			IssuingPoint issuingPoint = ((RoomPointIssuingPoint) bestRouteToIssue.getRoomPoints().get(lastIndex)).getIssuingPoint();
 			bestRouteToIssue.getRoomPoints().set(lastIndex, new RoomPointIssuingPoint(pos, issuingPoint));
 			
 			allRoutes.add(bestRouteToIssue);
-			
 			
 			lastPoint = bestRouteToIssue.getRoomPoints().get(bestRouteToIssue.getRoomPoints().size()-1);
 		}
@@ -207,31 +207,34 @@ public class RouteFinder implements IRouteFinder {
 		
 		List<Door> roomDoors = representation.getDoors(room);
 		RoomPoint fromPoint = new RoomPoint(from);
-		//Choose next door
-		List<Route> routesToRoom = new LinkedList<Route>();
-		for(Door d : roomDoors) {
-		//	if(fromPoint.getRoom().equals((new RoomPointDoor(d)).getRoom()))
-		//		continue;
-			Route r = getShortestRoute(calculateSubRoutes(fromPoint, new RoomPointDoor(d)));
-			if(r == null)
-				// Don't add empty route
-				continue;
-			routesToRoom.add(r);
-		}
-		//System.out.println("calcExpRoute2 "  + routesToRoom.size());
-		if(routesToRoom.size() == 0)
-			return null;
-		//Route explRoute = getShortestRoute(routesToRoom);
 		Route explRoute = new Route();
+		//Choose door
+		
+		
+		//System.out.println("calcExpRoute2 "  + routesToRoom.size());
+		//Route explRoute = getShortestRoute(routesToRoom);
+		/*
 		for(Route r : routesToRoom){
 			for(RoomPoint rp : r.getRoomPoints()){
 				explRoute.add(rp);
 			}
-		}
+		}*/
 		// Check which issuing points are in 
 		for(IssuingPoint ip: stockMang.getAllIssueingPoints())
 			if(room == representation.getRoomFor(ip))
-				explRoute.add(new RoomPoint(ip));
+				explRoute.add(new RoomPointIssuingPoint(ip));
+		RoomPoint before = new RoomPoint(stockMang.getAllIssueingPoints().get(stockMang.getAllIssueingPoints().size()-1));
+		for(Door d : roomDoors) {
+			//	if(fromPoint.getRoom().equals((new RoomPointDoor(d)).getRoom()))
+			//		continue;
+				Route r = getShortestRoute(calculateSubRoutes(before, new RoomPointDoor(d)));
+				if(r == null)
+					// Don't add empty route
+					continue;
+				before = new RoomPointDoor(d);
+				explRoute.concat(r);
+			}
+		//routesToRoom.add(explRoute);
 		return explRoute;
 	}
 
