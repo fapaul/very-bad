@@ -3,18 +3,17 @@ package RobotSystem.Implementation;
 import java.util.Date;
 import java.util.List;
 
+import Datatypes.Added.CartDestination;
+import Datatypes.Added.CartSource;
 import Datatypes.Added.RoomPoint;
+import Datatypes.Added.RoomPointCartArea;
+import Datatypes.Added.RoomPointIssuingPoint;
 import Datatypes.Added.Route;
-import RobotSystem.Interfaces.New.IRobotExecute;
 import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.environment.IWarehouseEnvironment;
 import de.hpi.sam.warehouse.order.Order;
-import de.hpi.sam.warehouse.order.OrderItem;
 import de.hpi.sam.warehouse.stock.Cart;
-import de.hpi.sam.warehouse.stock.IssuingPoint;
-import de.hpi.sam.warehouse.stock.StockroomID;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
-import RobotSystem.Implementation.*;
 
 public class OrderManager {
 // DriverManager, ExplorationManager
@@ -25,6 +24,11 @@ public class OrderManager {
 	private boolean done;
 	private Route currentSourceRoute = null;
 	private Route currentDestinationRoute = null;
+	
+	private List<Route> issuingPointRoutes = null;
+	private Route firstAreaRoute = null;
+	private Route finalAreaRoute = null;
+	
 	private Order currentOrder = null;
 	// For testing we try to drive the current route
 	private Route currentRoute = null;
@@ -55,67 +59,61 @@ public class OrderManager {
 		return min;
 	}
 
-	public void orderStart() {
+	public void orderStart(Order order) {
 		System.out.println("Starting order");
 		// No order nothing to do //TODO an error message might be good
 		if(currentOrder == null)
 			return;
 		System.out.println("Order size is " + currentOrder.getOrderItems().size());
 		done = false;
-		/*
-		// Getting to the cart area and the position of the first cart
-		robot.driveToPositionAvoidingObstacles(currentOrder.getCartArea().getCartPositions().get(0));
-		if(dm.isBumped()) {
-			System.out.println("Getting to cart area failed");
-			return;
-		}
 		
+		calculateWaysForOrder(order);
+		
+		dm.drive(firstAreaRoute);
 		// Get the cart
-		currentCart = robot.takeCart(currentOrder.getCartArea().getCartPositions().get(0));
-		if(currentCart == null) {
-			System.out.println("Error retrieving cart for CartArea");
-			return;
+		CartSource fistCartArea =  (CartSource) firstAreaRoute.getRoomPoints().get(firstAreaRoute.getRoomPoints().size()-1);
+		currentCart = fistCartArea.interact(null, robot);
+		int item = 0;
+		for (Route route : issuingPointRoutes) {
+			dm.drive(route);
+			// Get the last point an interact with the issuing point
+			RoomPointIssuingPoint issuingpoint = ((RoomPointIssuingPoint) route.getRoomPoints().get(route.getRoomPoints().size()-1));
+			issuingpoint.setItemsToTake(order.getOrderItems().get(item).getQuantity());
+			issuingpoint.interact(currentCart, robot);
+			item++;
 		}
 		
-		for (OrderItem orderItem : currentOrder.getOrderItems()) {
-			System.out.println("processing orderitem");
-			if( robot.getIssuingPoints(orderItem.getProductType()).size() < 1) {
-				System.out.println("Error: No issuings points for order item");
-				return;
-			}
-			// Find nearest issuing points 
-			
-			int robotX, robotZ;
-			robotX = robot.getCurrentPosition().getXPosition();
-			robotZ = robot.getCurrentPosition().getZPosition();
-			IssuingPoint nearest = robot.getIssuingPoints(orderItem.getProductType()).get(0);
-			for(IssuingPoint point : robot.getIssuingPoints(orderItem.getProductType())) {
-				if(point.getXPosition() - robotX + point.getZPosition() - robotZ  < nearest.getXPosition() - robotX + nearest.getZPosition() - robotZ) {
-					nearest = point;
-				}
-			}
-			
-			// Drive to issuingpoint and retrieve items
-			robot.driveToPositionAvoidingObstacles(nearest);
-			robot.load(orderItem.getQuantity(), nearest, currentCart);
-		}
-		System.out.println("finished order");
-		// TODO for testing we return to the current cart area
-		robot.driveToPositionAvoidingObstacles(currentOrder.getCartArea().getCartPositions().get(0));
-		*/
-		for (RoomPoint point : currentRoute.getRoomPoints()) {
-			System.out.println("Drive to " + point.getLocation().getXPosition() + "/" + point.getLocation().getZPosition());
-			robot.driveToPositionAvoidingObstacles(point.getLocation());
-			
-		}
-		
-		currentRoute = null;
-		currentCart = null;	
+		// All carts finished return to last element		
+		dm.drive(finalAreaRoute);
+		CartDestination finalCartArea =  (CartDestination) finalAreaRoute.getRoomPoints().get(finalAreaRoute.getRoomPoints().size()-1);
+		currentCart = finalCartArea.interact(currentCart, robot);
 		done = true;
 	}
 
 	public boolean orderDone() {
 		return done;
+	}
+	
+	
+	public void calculateWaysForOrder(Order order) {
+		List<Route> routeToCartArea = rf.calculateCartAreaRoutes(robot.getCurrentPosition());
+		issuingPointRoutes = rf.calculateIssuingPointsRoutes(robot.getCurrentPosition(), order);
+		List<Route> finishRoutes = rf.calculateCartAreaRoutes(robot.getCurrentPosition(), order);
+		
+		if(routeToCartArea.size() == 0 || issuingPointRoutes.size() == 0 || finishRoutes.size() == 0)
+			System.out.println("calculateOrderTime: Something went wrong with getting the routes");
+
+		
+		firstAreaRoute = rf.getShortestRoute(routeToCartArea);
+		int lastIndex = firstAreaRoute.getRoomPoints().size()-1;
+		// Setting the last point to a cart source
+		firstAreaRoute.getRoomPoints().set(lastIndex, new CartSource(
+				((RoomPointCartArea) firstAreaRoute.getRoomPoints().get(lastIndex)).getCartArea()));
+		finalAreaRoute = rf.getShortestRoute(finishRoutes);
+		
+		lastIndex = finalAreaRoute.getRoomPoints().size()-1;
+		finalAreaRoute.getRoomPoints().set(lastIndex, new CartDestination(
+				((RoomPointCartArea) finalAreaRoute.getRoomPoints().get(lastIndex)).getCartArea()));
 	}
 
 	public Date calculateOrderTime(Order order) {
@@ -123,12 +121,8 @@ public class OrderManager {
 		currentOrder = order;
 		int distance = 0;
 		int explorationDistance = 0;
-		List<Route> cartAreaRoutes = rf.calculateCartAreaRoutes(robot.getCurrentPosition());
-		List<Route> issuingPointRoutes = rf.calculateIssuingPointsRoutes(robot.getCurrentPosition(), order);
-		List<Route> finalCartAreaRoutes = rf.calculateCartAreaRoutes(robot.getCurrentPosition(), order);
 		
-		if(cartAreaRoutes.size() == 0 || issuingPointRoutes.size() == 0 || finalCartAreaRoutes.size() == 0)
-			System.out.println("calculateOrderTime: Something went wrong with getting the routes");
+		calculateWaysForOrder(order);
 		/*System.out.println(cartAreaRoutes.size());
 		for(Route r : cartAreaRoutes)
 			System.out.println("areaRoutes " + r.getDistance());
@@ -140,28 +134,21 @@ public class OrderManager {
 			System.out.println("finalCart " + r.getDistance());
 		*/
 		
-		// PLACEHOLDER
-		Route shortestCartAreaRoute = rf.getShortestRoute(cartAreaRoutes);
-		Route shortestIssuingPointRoutes = rf.getShortestRoute(issuingPointRoutes);
-		Route shortestCartAreaRoutes = rf.getShortestRoute(finalCartAreaRoutes);
+
 			
 		// calculate exploring distance if unexplored rooms exist
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 2; i++) {
 			List<RoomPoint> rp = null;
 			
 			// calculate distance for each subroute
 			Route route = null;
 			switch (i) {
 				case (0):
-					route = shortestCartAreaRoute;
+					route = firstAreaRoute;
 					rp = route.getRoomPoints();
 					break;
 				case (1):
-					route = shortestIssuingPointRoutes;
-					rp = route.getRoomPoints();
-					break;
-				case (2):
-					route = shortestCartAreaRoutes;
+					route = finalAreaRoute;
 					rp = route.getRoomPoints();
 					break;
 			}
@@ -179,15 +166,25 @@ public class OrderManager {
 			}
 		}
 		
+		for (Route route : issuingPointRoutes) {
+			for (RoomPoint r : route.getRoomPoints()) {
+				if (!em.isExplored(r.getRoom())) {
+					Route explorationRoute = rf.calculateExplorationRoute(rf.getPosition(), r.getRoom());
+					if(explorationRoute == null)
+						continue;
+					explorationDistance += rf.getDistance(explorationRoute);
+				}
+				else {
+					distance += rf.getDistance(route);
+				}
+			}
+		}
+		
 		// time in milli seconds
 		int explorationTime = explorationDistance/IWarehouseEnvironment.SAFETY_SPEED * 1000;
 		int routeTime = (int) (((float) distance/dm.getMaxSpeed()) * 1000);
 		//System.out.println(explorationDistance + " fjdk " + routeTime);
 		Date date = new Date(explorationTime + routeTime);
-		
-		currentRoute = shortestCartAreaRoute;
-		currentRoute.concat(shortestIssuingPointRoutes);
-		currentRoute.concat(shortestCartAreaRoutes);
 		
 		return date;
 	}

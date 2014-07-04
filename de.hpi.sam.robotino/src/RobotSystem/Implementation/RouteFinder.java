@@ -1,12 +1,12 @@
 package RobotSystem.Implementation;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import Datatypes.Added.RoomPoint;
 import Datatypes.Added.RoomPointCartArea;
 import Datatypes.Added.RoomPointDoor;
+import Datatypes.Added.RoomPointIssuingPoint;
 import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IRouteFinder;
 import de.cpslab.robotino.environment.Position;
@@ -18,7 +18,6 @@ import de.hpi.sam.warehouse.order.OrderItem;
 import de.hpi.sam.warehouse.stock.CartArea;
 import de.hpi.sam.warehouse.stock.Door;
 import de.hpi.sam.warehouse.stock.IssuingPoint;
-import de.hpi.sam.warehouse.stock.Stockroom;
 import de.hpi.sam.warehouse.stock.StockroomID;
 import de.hpi.sam.warehouse.stock.StockroomManagement;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
@@ -62,7 +61,7 @@ public class RouteFinder implements IRouteFinder {
         
         for (Path i : paths) {
             Route route = new Route();
-            route.add(from);
+        //   route.add(from);
             List<PathElement> pe = i.getPathElements();
             for (PathElement elem : pe) {
                 Door door = elem.getDoor();
@@ -172,7 +171,14 @@ public class RouteFinder implements IRouteFinder {
 				continue;
 			}
 			
+			int lastIndex = bestRouteToIssue.getRoomPoints().size()-1;
+			// Set the last point to be an isssuing point
+			bestRouteToIssue.getRoomPoints().set(lastIndex, new RoomPointIssuingPoint(
+					(bestRouteToIssue.getRoomPoints().get(lastIndex)).getLocation()));
+			
 			allRoutes.add(bestRouteToIssue);
+			
+			
 			lastPoint = bestRouteToIssue.getRoomPoints().get(bestRouteToIssue.getRoomPoints().size()-1);
 		}
 		

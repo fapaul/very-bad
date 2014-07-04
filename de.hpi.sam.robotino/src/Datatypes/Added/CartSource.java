@@ -23,7 +23,7 @@ public class CartSource extends RoomPointCartArea {
 		this.location = (Position)carts.get(0);
 		//this.room = warehouseRobot.getRoomFor(location);
 		this.room = room; 
-	}	
+	}
 	
 	@Override
 	public Cart interact(Cart cart,  WarehouseRobot robot){

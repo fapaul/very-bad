@@ -1,10 +1,9 @@
 package RobotSystem.Implementation;
 
 //import RobotExecute.RobotExecute.*;
-import java.util.Date;
-
+import Datatypes.Added.RoomPoint;
+import Datatypes.Added.Route;
 import RobotSystem.Interfaces.New.IDriveManager;
-import RobotSystem.Interfaces.New.IRobotExecute;
 import de.cpslab.robotino.actuator.interfaces.IRobotinoWheels;
 import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.WarehouseRobot;
@@ -33,6 +32,13 @@ public class DriveManager implements IDriveManager { // = IDrive
 	public void drive(Position position) {
 		System.out.println("Bumped status " +isBumped());
 		robot.driveToPositionAvoidingObstacles(position);		
+	}
+	
+	public void drive(Route route) {
+		// Driving route
+		for (RoomPoint point : route.getRoomPoints()) {
+			robot.driveToPositionAvoidingObstacles(point.getLocation());
+		}
 	}
 
 	@Override

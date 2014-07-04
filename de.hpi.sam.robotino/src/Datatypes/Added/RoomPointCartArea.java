@@ -14,6 +14,7 @@ public class RoomPointCartArea extends RoomPoint {
 	 * Cart positions wihtin this area.
 	 */
 	List<CartPosition> carts;
+	CartArea cartArea = null;
 
 	/*
 	 * ##########################################################################
@@ -22,6 +23,10 @@ public class RoomPointCartArea extends RoomPoint {
 	 * 
 	 * ##########################################################################
 	 */
+
+	public CartArea getCartArea() {
+		return cartArea;
+	}
 
 	/**
 	 * Create a new cart area that maintains the given positions.
@@ -33,6 +38,7 @@ public class RoomPointCartArea extends RoomPoint {
 	public RoomPointCartArea(CartArea cartArea)
 	{
 		super(cartArea.getCartPositions().get(0));
+		this.cartArea = cartArea;
 		carts = cartArea.getCartPositions();
 	}
 }

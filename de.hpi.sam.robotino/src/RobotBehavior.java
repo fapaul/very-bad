@@ -38,7 +38,7 @@ public class RobotBehavior implements Runnable
 	OrderManager orderMang = new OrderManager(robot, wr);
 	
 	System.out.println(this.robot.getID().getName() + " needs " + orderMang.calculateOrderTime(Server.INSTANCE.getOrderList().get(0)).getTime() /1000 + " seconds");
-	orderMang.orderStart();
+	orderMang.orderStart(Server.INSTANCE.getOrderList().get(0));
 	//	StockroomID sID = wr.getRoomFor(robot.getCurrentPosition());
 	//	System.out.println("Stockroom is:" + sID.getID().toString());
 	//	StockroomManagement StockManager = StockroomManagement.INSTANCE;
@@ -62,6 +62,7 @@ public class RobotBehavior implements Runnable
 		//System.out.println("after drive");
 
 // Test from Ajay
+	/*
 	RouteFinder rf = new RouteFinder(this.robot,  wr);
 		Position pos = rf.getPosition();
 		DriveManager driveMan = new DriveManager(this.robot);	
@@ -87,7 +88,7 @@ public class RobotBehavior implements Runnable
 		System.out.println("yeeah");
 		driveMan.drive(new Position(100, 100));
 		System.out.println("after drive");
-
+		*/
 		while (!this.robot.isBumperActivated())
 		{
 			try
