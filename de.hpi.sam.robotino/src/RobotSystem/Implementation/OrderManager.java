@@ -78,7 +78,7 @@ public class OrderManager {
 		for (Route route : issuingPointRoutes) {
 			dm.drive(route);
 			// Get the last point an interact with the issuing point
-			RoomPointIssuingPoint issuingpoint = ((RoomPointIssuingPoint) route.getRoomPoints().get(route.getRoomPoints().size()-1));
+			RoomPointIssuingPoint issuingpoint = ((RoomPointIssuingPoint) new RoomPointIssuingPoint(route.getRoomPoints().get(route.getRoomPoints().size()-1).getLocation()));
 			issuingpoint.setItemsToTake(order.getOrderItems().get(item).getQuantity());
 			issuingpoint.interact(currentCart, robot);
 			item++;
@@ -110,7 +110,9 @@ public class OrderManager {
 		// Setting the last point to a cart source
 		firstAreaRoute.getRoomPoints().set(lastIndex, new CartSource(
 				((RoomPointCartArea) firstAreaRoute.getRoomPoints().get(lastIndex)).getCartArea()));
-	
+		
+		
+		
 		finalAreaRoute = rf.getShortestRoute(finishRoutes);
 		lastIndex = finalAreaRoute.getRoomPoints().size()-1;
 		System.out.println("this is a test " + (order.getCartArea() == null));
