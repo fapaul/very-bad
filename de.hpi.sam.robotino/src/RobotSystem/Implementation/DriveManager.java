@@ -30,12 +30,10 @@ public class DriveManager implements IDriveManager { // = IDrive
 	}
 	
 	public void drive(Position position) {
-		System.out.println("Bumped status " +isBumped());
-		if(curCart != null)
+		if (curCart != null)
 			robot.transportToPositionAvoidingObstacles(position);
 		else
 			robot.driveToPositionAvoidingObstacles(position);
-		//robot.driveToPositionAvoidingObstacles(position);		
 	}
 	
 	public void drive(Route route) {

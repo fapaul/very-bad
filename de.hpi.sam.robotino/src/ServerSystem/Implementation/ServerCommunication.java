@@ -21,35 +21,38 @@ public class ServerCommunication implements  IServerCommunication {
 
 	@Override
 	public StateType.robot requestRobotStatus(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_STATUS);
-		server.sendMessage(robot, messToSend);
+		// Send request
+		StatusMessage message = new StatusMessage(StateType.message.SERVER_STATUS);
+		server.sendMessage(robot, message);
 
-		while (!hasMessage(StateType.message.ROBOT_STATUS)); // Problem is that position message might not be on top since multiple can be received at once
-		StatusMessage response = readMessage();
+		// Receive answer
+		while (!hasMessage(StateType.message.ROBOT_STATUS));
+		StatusMessage response = readMessage(StateType.message.ROBOT_STATUS);
 		try {
-			StateType.robot status = (StateType.robot) response.getContent();
+			StateType.robot status = (StateType.robot)response.getContent();
 			return status;
 		}
 		catch (Exception e) {
-			System.out.println("Message content is no valid position. " + e);
+			System.out.println("Message content is no valid robot status. " + e);
 			return null;
 		}
 	}
 
 	@Override
 	public Date requestOrderTime(Order order, RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_ORDERTIME);
-		server.sendMessage(robot, messToSend);
-		// It's assumed he sends a message with his status
+		// Send request
+		StatusMessage message = new StatusMessage(StateType.message.SERVER_ORDERTIME, order);
+		server.sendMessage(robot, message);
+		
 		// Receive answer
-		while (!hasMessage(StateType.message.ROBOT_ORDERTIME)); // Problem is that position message might not be on top since multiple can be received at once
-		StatusMessage response = readMessage();
+		while (!hasMessage(StateType.message.ROBOT_ORDERTIME));
+		StatusMessage response = readMessage(StateType.message.ROBOT_ORDERTIME);
 		try {
 			Date date = (Date)response.getContent();
 			return date;
 		}
 		catch (Exception e) {
-			System.out.println("Message content is no valid position. " + e);
+			System.out.println("Message content is no valid date. " + e);
 			return null;
 		}
 	}
@@ -75,28 +78,25 @@ public class ServerCommunication implements  IServerCommunication {
 
 	@Override
 	public void sendSleep(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_SLEEP);
-		server.sendMessage(robot , messToSend);
+		StatusMessage message = new StatusMessage(StateType.message.SERVER_SLEEP);
+		server.sendMessage(robot , message);
 	}
 
 	@Override
 	public void sendWakeup(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_WAKEUP);
-		server.sendMessage(robot, messToSend);
+		StatusMessage message = new StatusMessage(StateType.message.SERVER_WAKEUP);
+		server.sendMessage(robot, message);
 	}
 
 	@Override
 	public void sendOrderStart(RobotinoID robot) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.SERVER_ORDER);
-		server.sendMessage(robot, messToSend);
+		StatusMessage message = new StatusMessage(StateType.message.SERVER_ORDER);
+		server.sendMessage(robot, message);
 	}
 
 	@Override
 	public boolean hasMessage() { 
 		List<Message> messages = server.receiveMessages();
-		if(messages == null)
-			return false;
-				
 		if (messages.size() > 0) {
 			System.out.println("Server received a message.");
 			for (Message message : messages) {
@@ -139,7 +139,7 @@ public class ServerCommunication implements  IServerCommunication {
 	}
 	
 	@Override
-	public StatusMessage readMessage(StateType.message type) { // TODO update interface
+	public StatusMessage readMessage(StateType.message type) {
 		List<StatusMessage> polled = new LinkedList<StatusMessage>();
 		StatusMessage message = null;
 		while (incoming.size() > 0) {

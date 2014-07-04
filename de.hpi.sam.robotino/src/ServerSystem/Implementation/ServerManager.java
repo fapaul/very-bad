@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import Datatypes.Added.StateType;
 import Datatypes.Added.StatusMessage;
@@ -23,62 +24,47 @@ import de.hpi.sam.warehouse.order.OrderManagement;
 
 public class ServerManager extends Thread {
 
-	OrderManagement 	orderManagemet;
-	ServerCommunication serverComm;
-	Position robotPos;
-	StateType.robot robotState;
-	Date orderTime;
-	Server server;
-	// Maximum number of messages and orders worked at at once
-	int MAX_MESSAGE_ONCE = 20;
-	int MAX_ORDER_ONCE = 20;
-	float energyConsumption;
-	List<RobotinoID> robots;
-	Set<Order> pendingOrders;
-	Set<Order> inprogressOrders;
-	
-	boolean running = false;
+	private OrderManagement orderManagemet = new OrderManagement();
+	private ServerCommunication serverComm = new ServerCommunication();
+	private float energyConsumption = 1.0f;
+	private List<RobotinoID> robots = new ArrayList<RobotinoID>();
+	private Set<Order> pendingOrders = new HashSet<Order>();
+	private Set<Order> inprogressOrders = new HashSet<Order>();
+	private AtomicBoolean running = new AtomicBoolean(false);
+	private Server server;
 	
 	public ServerManager() {
-		pendingOrders = new HashSet<Order>();
-		inprogressOrders = new HashSet<Order>();
-		serverComm = new ServerCommunication();
-		orderManagemet = new OrderManagement(); 
-		server = Server.INSTANCE;
-		robots = new ArrayList<RobotinoID>(); 
-		
 		startServer();
 	}
 	
-	
 	public boolean isRunning() {
-		return running;
+		return running.get();
 	}
 	
 	public void startServer() {
-		running = true;
-		this.start();
+		running.set(true);
+		start();
 	}
 	
 	public void stopServer() {
 		// Let the server finish the last action
-		running = false;
+		// ...
+		
+		running.set(false);
 	}
 
-	void handleMessage(Message message) {
-		StatusMessage servMess = (StatusMessage) message;
-		
-		switch (servMess.getTypeOfMessage()) {
+	void handleMessage(StatusMessage message) {
+		switch (message.getTypeOfMessage()) {
 		case ROBOT_FINISH:
-			//finalize order progressing
-			Order curOrder = (Order)servMess.getContent();
-			inprogressOrders.remove(curOrder);
-			System.out.println("Order from " + curOrder.getDate() + " finished");
+			Order order = (Order)message.getContent();
+			inprogressOrders.remove(order);
+			orderManagemet.finishOrder(order, order.getCartArea().getCartPositions().get(0)); // Let robot send final cart position instead
+			System.out.println("Finished an order.");
 			break;
 		case ROBOT_REGISTER:
-			RobotinoID robot = (RobotinoID) servMess.getContent();
-			System.out.println("Registered Robot " + robot.getID() + " at server");
+			RobotinoID robot = (RobotinoID)message.getContent();
 			robots.add(robot);
+			System.out.println("Registered robot at server.");
 			break;
 		case SERVER_WAKEUP:
 			startServer();
@@ -91,72 +77,63 @@ public class ServerManager extends Thread {
 	}
 	
 	private RobotinoID chooseRobot(Order order) {
-		Map<RobotinoID, Date> times = new HashMap<RobotinoID, Date>();
-		
+		// Request order times
+		Map<RobotinoID, Date> orderTimes = new HashMap<RobotinoID, Date>();
 		for (RobotinoID robot : robots) {
-			// Might lead to infinite waiting
-			// TODO Fix this
-			times.put(robot, serverComm.requestOrderTime(order, robot));
+			StateType.robot status = serverComm.requestRobotStatus(robot);
+			if (status == StateType.robot.IDLE || status == StateType.robot.EXPLORING)
+				orderTimes.put(robot, serverComm.requestOrderTime(order, robot));
 		}
 		
 		// Get robot with best time
 		RobotinoID best = null;
-		for(Entry<RobotinoID, Date> entry : times.entrySet()) {
-			if(best == null)
-				best = entry.getKey();
-			else
-				if(entry.getValue().before(times.get(best)))
-					best = entry.getKey();
+		for (Entry<RobotinoID, Date> orderTime : orderTimes.entrySet()) {
+			if (best == null)
+				best = orderTime.getKey();
+			else if (orderTime.getValue().before(orderTimes.get(best)))
+					best = orderTime.getKey();
 		}
 		return best;
 	}
 	
 	void fetchOrders() {
-		// If a order is not in progress it must be pending
-		for(Order order : orderManagemet.getOrderList()) {
-			if(!inprogressOrders.contains(order))
+		// Add messages that we don't track already
+		for (Order order : orderManagemet.getOrderList())
+			if (!inprogressOrders.contains(order) && !pendingOrders.contains(order))
 				pendingOrders.add(order);
-		}
 	}
 
 	void updateLoop() {
-		 // Check all messages
-		//System.out.println("there are any new Messages " + (serverComm.hasMessage()));
-		for (int i = 0; i < MAX_MESSAGE_ONCE && serverComm.hasMessage(); i++) {
+		// Read message
+		if (serverComm.hasMessage())
 			handleMessage(serverComm.readMessage());
-		}
+		
+		// Fetch orders from order management
 		fetchOrders();
 		
 		// Send out an order
-		for(int i = 0; i < MAX_ORDER_ONCE && !pendingOrders.isEmpty(); i++) {
+		if (!pendingOrders.isEmpty()) {
 			Order order = pendingOrders.iterator().next();
-			System.out.println("ServerManager: Sending order " + order.getDate() + " to robot");
-			serverComm.sendOrderStart(chooseRobot(order));
-			inprogressOrders.add(order);
-			pendingOrders.remove(order);
+			RobotinoID robot = chooseRobot(order);
+			if (robot != null) {
+				System.out.println("Sent out an order.");
+				serverComm.sendOrderStart(robot);
+				inprogressOrders.add(order);
+				pendingOrders.remove(order);
+			}
 		}
 	}
 	
-	/*
-	 * Uses the function updateLoop 
-	 *  (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
 	@Override
 	public void run() {
-		// Calls the update loop and idles the thread for a while
-		
-		while(running) {
+		while(running.get()) {
 			updateLoop();
-			
-			try
-			{
-				Thread.sleep(200);
+			try {
+				Thread.sleep(100); // Calculate sleep time from energy consumption
 			}
-			catch (InterruptedException e)
-			{
-				System.out.println("Error while ServerManger was sleeping");
-				running = false;
+			catch (InterruptedException e) {
+				System.out.println("Error while server thread was sleeping.");
+				running.set(false);
 			}
 		}
 		

@@ -1,6 +1,7 @@
 package RobotSystem.Implementation;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -19,85 +20,83 @@ import de.hpi.sam.warehouse.stock.StockroomID;
 
 public class RobotCommunication implements IRobotCommunication {
 
-	private CommunicationID server;
-	private Queue<Message> incoming;		// = new LinkedList<Message>;
+	private Queue<StatusMessage> incoming = new LinkedList<StatusMessage>();
+	private CommunicationID server = Server.serverID; 
+	private WarehouseRobot robot;
+	
 	private List <CommunicationID> robots;
-	private RobotinoWLanAdapter robotComm;
-	private WarehouseRobot warehouseRobot;
 	private List<StockroomID> explorableStockrooms;
-
 	
-	
-	public RobotCommunication(WarehouseRobot robot){
-		server = Server.INSTANCE.serverID; 
-		warehouseRobot = robot;
+	public RobotCommunication(WarehouseRobot robot){ 
+		this.robot = robot;
+		sendRobotRegistration();
 	}
 	
-	public void exchangeInformation(){
-		for(int j = 0; j < explorableStockrooms.size();j++ ){
-			for (int i = 0; i < robots.size(); i++){
-				if (robots.get(i) == server){
+	public void exchangeInformation() {
+		for(int j = 0; j < explorableStockrooms.size(); j++) {
+			for (int i = 0; i < robots.size(); i++) {
+				if (robots.get(i) == server)
 					i++;
-				}else{
-					warehouseRobot.requestAndMergeExplorationInfo(explorableStockrooms.get(j), (RobotinoID)robots.get(i));
-				}
+				else
+					robot.requestAndMergeExplorationInfo(explorableStockrooms.get(j), (RobotinoID)robots.get(i));
 			}
 		}
 	}
-
-	@Override
-	public boolean hasMessage() {
-		fetchMessage();
-		return incoming.size() > 0;
-	}
-
-	@Override
-	public Message readMessage() {
-		return incoming.poll();
+	
+	public void sendRobotRegistration() {
+		StatusMessage message = new StatusMessage(StateType.message.ROBOT_REGISTER, robot.getCommunicationID());
+		robot.sendMessage(server, message);
 	}
 	
-	public void sendRobotRegistration(RobotinoID robID){
-		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_REGISTER);
-		messToSend.setContent(robID);
-		warehouseRobot.sendMessage(server, messToSend);
-	}
 	@Override
 	public void sendRobotStatus(StateType.robot status) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_STATUS);
-		messToSend.setContent(status);
-		warehouseRobot.sendMessage(server, messToSend);	
+		StatusMessage message = new StatusMessage(StateType.message.ROBOT_STATUS, status);
+		robot.sendMessage(server, message);	
 	}
 
 	@Override
 	public void sendOrderTime(Date duration) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_ORDERTIME);
-		messToSend.setContent(duration);
-		System.out.println(messToSend.getID());
-		System.out.println(server);
-		warehouseRobot.sendMessage(server, messToSend);		
+		StatusMessage message = new StatusMessage(StateType.message.ROBOT_ORDERTIME, duration);
+		robot.sendMessage(server, message);		
 	}
 	
 	@Override
 	public void sendPosition(Position position) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_POSITION);
-		messToSend.setContent(position);
-		warehouseRobot.sendMessage(server,  messToSend);
+		StatusMessage message = new StatusMessage(StateType.message.ROBOT_POSITION, position);
+		robot.sendMessage(server, message);
 	}
 
 	@Override
 	public void sendOrderFinish(Order order) {
-		StatusMessage messToSend = new StatusMessage(StateType.message.ROBOT_FINISH);
-		messToSend.setContent(order);
-		warehouseRobot.sendMessage(server, messToSend);
+		StatusMessage message = new StatusMessage(StateType.message.ROBOT_FINISH, order);
+		robot.sendMessage(server, message);
 	}
 
 	@Override
 	public float getWorkload() {
-		return 0;
+		return 0.0f;
 	}
 	
-	public void fetchMessage(){
-		incoming.addAll(warehouseRobot.receiveMessages());
+	@Override
+	public boolean hasMessage() { 
+		List<Message> messages = robot.receiveMessages();
+		if (messages.size() > 0) {
+			System.out.println("Robot received a message.");
+			for (Message message : messages) {
+				try {
+					incoming.add((StatusMessage)message);
+				}
+				catch (Exception e) {
+					System.out.println("Robot received invalid message. " + e);
+				}
+			}
+			return true;
+		}
+		return false;
 	}
-
+	
+	@Override
+	public StatusMessage readMessage() {
+		return incoming.poll();
+	}
 }

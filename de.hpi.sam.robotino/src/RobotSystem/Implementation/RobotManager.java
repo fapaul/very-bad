@@ -2,6 +2,7 @@
 package RobotSystem.Implementation;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import Datatypes.Added.StateType;
 import Datatypes.Added.StateType.robot;
@@ -16,61 +17,62 @@ import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
 
 public class RobotManager extends Thread {
-	private int BATTERYTHRESHOLD;
+	
+	@SuppressWarnings("unused")
+	private int BATTERYTHRESHOLD = 10;
+	
 	private Order currentOrder;
 	private OrderManager orderManager;
-	private ExplorationManager exploreMang;
+	private ExplorationManager exploreManger;
 	private RobotCommunication robComm;
 	private WarehouseRobot wareRobot;
-	private WarehouseRepresentation repre;
-	private StateType.robot status;
-	private final int MAX_MESSAGE_ONCE = 20;
+	private WarehouseRepresentation repre = new WarehouseRepresentation();
+	private StateType.robot status = robot.IDLE;
+	private AtomicBoolean running = new AtomicBoolean(false);
 	
-	private boolean running = false;
-	
-	public RobotManager(WarehouseRobot warehouseRobot){
-		status = robot.IDLE;
+	public RobotManager(WarehouseRobot warehouseRobot) {
 		wareRobot = warehouseRobot;
-		repre = new WarehouseRepresentation();
-		orderManager = new OrderManager(warehouseRobot, repre);
-		exploreMang = new ExplorationManager(wareRobot, repre);
+		robComm = new RobotCommunication(wareRobot);
+		orderManager = new OrderManager(wareRobot, repre);
+		exploreManger = new ExplorationManager(wareRobot, repre);
 	}
 	
-	public boolean isRunning(){
-		return running;
+	public boolean isRunning() {
+		return running.get();
 	}
 	
-	public void startRobot(){
-		running = true;
+	public void startRobot() {
+		running.set(true);
 		this.start();
 	}
 	
 	private void updateLoop() {
 		// If WLAN is available we can share informaitons
-	//	for(CommunicationID other : wareRobot.scanForCommunicationPartnerInRange()) {
-	//		wareRobot.requestAndMergeExplorationInfo(wareRobot.getRoomFor(wareRobot.getCurrentPosition()), new RobotinoID(other.));
-	//	}
+		// for(CommunicationID other : wareRobot.scanForCommunicationPartnerInRange()) {
+		//     wareRobot.requestAndMergeExplorationInfo(wareRobot.getRoomFor(wareRobot.getCurrentPosition()), new RobotinoID(other.));
+		// }
 		
-		if(!robComm.hasMessage()) {
-			// If nothing to do start the exploration
-			exploreMang.explorationStart();
-		}
+		// If sleeping only care about wakeup messages
+		// ...
+		
+		if (robComm.hasMessage())
+			handleMessage(robComm.readMessage());
 		else
-			for (int i = 0; i < MAX_MESSAGE_ONCE && robComm.hasMessage();i++){
-				System.out.println("got message");
-				handleMessage(robComm.readMessage());
-			}
+			exploreManger.explorationStart();
 		
+		// If finished order, notify server and set status to explore or idle
+		// ...
+		
+		// Would be better to not break out of update loop completely
+		if (wareRobot.isBumperActivated())
+			running.set(false);
 	}
 	
-	private void handleMessage(Message message) {
-		StatusMessage robMess = (StatusMessage) message;
-		
-		switch (robMess.getTypeOfMessage()){
+	private void handleMessage(StatusMessage message) {
+		switch (message.getTypeOfMessage()) {
 		case SERVER_ORDERTIME:
-			Order order = (Order)robMess.getContent();
-			currentOrder = order;
-			Date duration = orderManager.calculateOrderTime(order);
+			currentOrder = (Order)message.getContent();
+			Date duration = orderManager.calculateOrderTime(currentOrder);
 			robComm.sendOrderTime(duration);
 			break;
 		case SERVER_POSITION:
@@ -78,13 +80,11 @@ public class RobotManager extends Thread {
 			robComm.sendPosition(position);
 			break;
 		case SERVER_SLEEP:
-			this.status = robot.SLEEPING;
 			setStatus(robot.SLEEPING);
 			break;
 		case SERVER_ORDER:
-			this.status = robot.EXECUTING;
+			setStatus(robot.EXECUTING);
 			orderManager.orderStart(currentOrder);
-			this.status = robot.IDLE;
 			break;
 		case SERVER_WAKEUP:
 			setStatus(robot.IDLE);
@@ -92,28 +92,24 @@ public class RobotManager extends Thread {
 			break;
 		default:
 			break;
-			
 		}
 	}
 	
 	@Override
 	public void run() {
-		// Calls the update loop and idles the thread for a while
-		
-		while(running) {
+		while (running.get()) {
 			updateLoop();
-			
-			try
-			{
-				Thread.sleep(200);
+			try {
+				Thread.sleep(100);
 			}
-			catch (InterruptedException e)
-			{
-				System.out.println("Error while Robot " + wareRobot.getID() + " was waiting");
-				running = false;
+			catch (InterruptedException e) {
+				System.out.println("Error while robot thread was sleeping.");
+				running.set(false);
 			}
 		}
 		
+		wareRobot.brake();
+		System.out.println("Robot bumped.");
 	}
 	
 	private StateType.robot getStatus() {
@@ -123,7 +119,4 @@ public class RobotManager extends Thread {
 	private void setStatus(StateType.robot status) {
 		this.status = status;
 	}
-
-
-
 }
