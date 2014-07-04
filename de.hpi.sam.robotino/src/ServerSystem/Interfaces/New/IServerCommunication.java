@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import Datatypes.Added.StateType;
+import Datatypes.Added.StatusMessage;
 import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.actuator.communication.Message;
 import de.cpslab.robotino.environment.Position;
@@ -25,6 +26,9 @@ public interface IServerCommunication {
 	
 	boolean hasMessage();
 	
-	Message readMessage();	//check Message
-
+	boolean hasMessage(StateType.message type);
+	
+	StatusMessage readMessage();
+	
+	StatusMessage readMessage(StateType.message type);
 }

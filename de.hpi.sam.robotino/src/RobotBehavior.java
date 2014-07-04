@@ -19,13 +19,10 @@ public class RobotBehavior implements Runnable
 	@Override
 	public void run()
 	{
-		StatusMessage mess = new StatusMessage(StateType.message.ROBOT_REGISTER);
-
 		while (!this.robot.isBumperActivated())
 		{
-			System.out.println("Sender ID: " + robot.getCommunicationID().getID() + ", Server ID: " + Server.serverID.getID());
-			this.robot.sendMessage(Server.serverID, mess);
-			System.out.println("Sending ...");
+		//	System.out.println("Sender ID: " + robot.getCommunicationID().getID() + ", Server ID: " + Server.serverID.getID());	
+		//	System.out.println("Sending ...");
 			try {
 				Thread.sleep(1000);
 			}

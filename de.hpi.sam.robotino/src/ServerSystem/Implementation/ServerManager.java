@@ -121,7 +121,7 @@ public class ServerManager extends Thread {
 
 	void updateLoop() {
 		 // Check all messages
-		System.out.println("there are any new Messages " + (serverComm.hasMessage()));
+		//System.out.println("there are any new Messages " + (serverComm.hasMessage()));
 		for (int i = 0; i < MAX_MESSAGE_ONCE && serverComm.hasMessage(); i++) {
 			handleMessage(serverComm.readMessage());
 		}
@@ -130,6 +130,7 @@ public class ServerManager extends Thread {
 		// Send out an order
 		for(int i = 0; i < MAX_ORDER_ONCE && !pendingOrders.isEmpty(); i++) {
 			Order order = pendingOrders.iterator().next();
+			System.out.println("ServerManager: Sending order " + order.getDate() + " to robot");
 			serverComm.sendOrderStart(chooseRobot(order));
 			inprogressOrders.add(order);
 			pendingOrders.remove(order);

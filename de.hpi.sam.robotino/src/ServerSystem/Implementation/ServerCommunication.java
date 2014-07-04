@@ -61,8 +61,8 @@ public class ServerCommunication implements  IServerCommunication {
 		server.sendMessage(robot, request);
 		
 		// Receive answer
-		while (!hasMessage(StateType.message.ROBOT_POSITION)); // Problem is that position message might not be on top since multiple can be received at once
-		StatusMessage response = readMessage();
+		while (!hasMessage(StateType.message.ROBOT_POSITION));
+		StatusMessage response = readMessage(StateType.message.ROBOT_POSITION);
 		try {
 			Position position = (Position)response.getContent();
 			return position;
@@ -92,8 +92,11 @@ public class ServerCommunication implements  IServerCommunication {
 	}
 
 	@Override
-	public boolean hasMessage() {
+	public boolean hasMessage() { 
 		List<Message> messages = server.receiveMessages();
+		if(messages == null)
+			return false;
+				
 		if (messages.size() > 0) {
 			System.out.println("Server received a message.");
 			for (Message message : messages) {
@@ -110,14 +113,44 @@ public class ServerCommunication implements  IServerCommunication {
 	}
 	
 	public boolean hasMessage(StateType.message type) {
-		if (hasMessage())
-			if (incoming.peek().getTypeOfMessage() == type)
-				return true;
+		List<Message> messages = server.receiveMessages();
+		boolean found = false;
+		if (messages.size() > 0) {
+			System.out.println("Server received a message.");
+			for (Message message : messages) {
+				try {
+					StatusMessage casted = (StatusMessage)message;
+					if (casted.getTypeOfMessage() == type)
+						found = true;
+					incoming.add(casted);
+				}
+				catch (Exception e) {
+					System.out.println("Server received invalid message. " + e);
+				}
+			}
+			return found;
+		}
 		return false;
 	}
 
 	@Override
-	public StatusMessage readMessage() { // TODO Update return type in interface
+	public StatusMessage readMessage() {
 		return incoming.poll();
+	}
+	
+	@Override
+	public StatusMessage readMessage(StateType.message type) { // TODO update interface
+		List<StatusMessage> polled = new LinkedList<StatusMessage>();
+		StatusMessage message = null;
+		while (incoming.size() > 0) {
+			message = incoming.poll();
+			polled.add(message);
+			if (message.getTypeOfMessage() == type)
+				break;
+			else
+				message = null;
+		}
+		incoming.addAll(polled);
+		return message;
 	}
 }
