@@ -180,8 +180,10 @@ public class RouteFinder implements IRouteFinder {
 			
 			int lastIndex = bestRouteToIssue.getRoomPoints().size()-1;
 			// Set the last point to be an isssuing point
-			bestRouteToIssue.getRoomPoints().set(lastIndex, new RoomPointIssuingPoint(
-					(bestRouteToIssue.getRoomPoints().get(lastIndex)).getLocation()));
+			
+			Position pos = bestRouteToIssue.getRoomPoints().get(lastIndex).getLocation();
+			IssuingPoint issuingPoint = ((RoomPointIssuingPoint) bestRouteToIssue.getRoomPoints().get(lastIndex)).getIssuingPoint();
+			bestRouteToIssue.getRoomPoints().set(lastIndex, new RoomPointIssuingPoint(pos, issuingPoint));
 			
 			allRoutes.add(bestRouteToIssue);
 			

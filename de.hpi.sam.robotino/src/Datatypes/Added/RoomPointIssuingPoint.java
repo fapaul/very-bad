@@ -11,8 +11,9 @@ public class RoomPointIssuingPoint extends RoomPoint {
 	private int itemsToTake;
 	private IssuingPoint point;
 
-	public RoomPointIssuingPoint(Position location) {
+	public RoomPointIssuingPoint(Position location, IssuingPoint point) {
 		super(location);
+		this.point = point;
 	}
 	public void setItemsToTake(int itemsToTake) {
 		this.itemsToTake = itemsToTake;

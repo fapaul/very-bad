@@ -9,10 +9,12 @@ import Datatypes.Added.RoomPoint;
 import Datatypes.Added.RoomPointCartArea;
 import Datatypes.Added.RoomPointIssuingPoint;
 import Datatypes.Added.Route;
+import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.environment.IWarehouseEnvironment;
 import de.hpi.sam.warehouse.order.Order;
 import de.hpi.sam.warehouse.stock.Cart;
+import de.hpi.sam.warehouse.stock.IssuingPoint;
 import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
 public class OrderManager {
@@ -80,7 +82,9 @@ public class OrderManager {
 			
 			dm.drive(route);
 			// Get the last point an interact with the issuing point
-			RoomPointIssuingPoint issuingpoint = ((RoomPointIssuingPoint) new RoomPointIssuingPoint(route.getRoomPoints().get(route.getRoomPoints().size()-1).getLocation()));
+			Position pos = route.getRoomPoints().get(route.getRoomPoints().size()-1).getLocation();
+			IssuingPoint issuingPoint = ((RoomPointIssuingPoint) route.getRoomPoints().get(route.getRoomPoints().size()-1)).getIssuingPoint();
+			RoomPointIssuingPoint issuingpoint = ((RoomPointIssuingPoint) new RoomPointIssuingPoint(pos, issuingPoint));
 			issuingpoint.setItemsToTake(order.getOrderItems().get(item).getQuantity());
 			issuingpoint.interact(currentCart, robot);
 			item++;
