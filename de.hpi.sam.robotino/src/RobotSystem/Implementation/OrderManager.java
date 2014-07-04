@@ -73,9 +73,11 @@ public class OrderManager {
 		// Get the cart
 		CartSource fistCartArea =  (CartSource) firstAreaRoute.getRoomPoints().get(firstAreaRoute.getRoomPoints().size()-1);
 		currentCart = fistCartArea.interact(null, robot);
+		dm.setCurCart(currentCart);
 		System.out.println("test");
 		int item = 0;
 		for (Route route : issuingPointRoutes) {
+			
 			dm.drive(route);
 			// Get the last point an interact with the issuing point
 			RoomPointIssuingPoint issuingpoint = ((RoomPointIssuingPoint) new RoomPointIssuingPoint(route.getRoomPoints().get(route.getRoomPoints().size()-1).getLocation()));
@@ -88,6 +90,7 @@ public class OrderManager {
 		dm.drive(finalAreaRoute);
 		CartDestination finalCartArea =  (CartDestination) finalAreaRoute.getRoomPoints().get(finalAreaRoute.getRoomPoints().size()-1);
 		currentCart = finalCartArea.interact(currentCart, robot);
+		dm.setCurCart(currentCart);
 		done = true;
 	}
 

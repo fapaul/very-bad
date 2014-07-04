@@ -31,14 +31,29 @@ public class DriveManager implements IDriveManager { // = IDrive
 	
 	public void drive(Position position) {
 		System.out.println("Bumped status " +isBumped());
-		robot.driveToPositionAvoidingObstacles(position);		
+		if(curCart != null)
+			robot.transportToPositionAvoidingObstacles(position);
+		else
+			robot.driveToPositionAvoidingObstacles(position);
+		//robot.driveToPositionAvoidingObstacles(position);		
 	}
 	
 	public void drive(Route route) {
 		// Driving route
 		for (RoomPoint point : route.getRoomPoints()) {
-			robot.driveToPositionAvoidingObstacles(point.getLocation());
+			if(curCart != null)
+				robot.transportToPositionAvoidingObstacles(point.getLocation());
+			else
+				robot.driveToPositionAvoidingObstacles(point.getLocation());
 		}
+	}
+
+	public Cart getCurCart() {
+		return curCart;
+	}
+
+	public void setCurCart(Cart curCart) {
+		this.curCart = curCart;
 	}
 
 	@Override
