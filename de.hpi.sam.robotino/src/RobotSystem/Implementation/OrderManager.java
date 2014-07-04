@@ -73,6 +73,7 @@ public class OrderManager {
 		calculateWaysForOrder(order);
 		
 		dm.drive(firstAreaRoute);
+		System.out.println(robot.getID().getName() + " arrived at first cart area.");
 		// Get the cart
 		CartSource fistCartArea =  (CartSource) firstAreaRoute.getRoomPoints().get(firstAreaRoute.getRoomPoints().size()-1);
 		currentCart = fistCartArea.interact(null, robot);
@@ -81,7 +82,9 @@ public class OrderManager {
 		System.out.println("test");
 		int item = 0;
 		for (Route route : issuingPointRoutes) {
+			
 			dm.drive(route);
+			System.out.println(robot.getID().getName() + " arrived issuing point.");
 			// Get the last point an interact with the issuing point
 			Position pos = route.getRoomPoints().get(route.getRoomPoints().size()-1).getLocation();
 			IssuingPoint issuingPoint = ((RoomPointIssuingPoint) route.getRoomPoints().get(route.getRoomPoints().size()-1)).getIssuingPoint();
@@ -93,6 +96,7 @@ public class OrderManager {
 		
 		// All carts finished return to last element		
 		dm.drive(finalAreaRoute);
+		System.out.println(robot.getID().getName() + " arrived at final cart area.");
 		CartDestination finalCartArea =  (CartDestination) finalAreaRoute.getRoomPoints().get(finalAreaRoute.getRoomPoints().size()-1);
 		currentCart = finalCartArea.interact(currentCart, robot);
 		dm.setCurCart(currentCart);
@@ -129,7 +133,6 @@ public class OrderManager {
 				((RoomPointCartArea) firstAreaRoute.getRoomPoints().get(lastIndex)).getCartArea()));
 		
 		lastIndex = finalAreaRoute.getRoomPoints().size()-1;
-		System.out.println("this is a test " + (order.getCartArea() == null));
 		finalAreaRoute.getRoomPoints().set(lastIndex, new CartDestination(order.getCartArea()));
 	}
 

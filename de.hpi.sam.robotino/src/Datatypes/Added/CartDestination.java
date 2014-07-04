@@ -17,7 +17,6 @@ public class CartDestination extends RoomPointCartArea {
 		carts = cartArea.getCartPositions();
 		
 		this.location = (Position)carts.get(0);
-		System.out.println("cart pso is " + (this.location == null));
 		this.room = rep.getRoomFor(location);
 	}
 	
