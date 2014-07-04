@@ -24,6 +24,7 @@ public class RobotExecute implements IRobotExecute{
 	private ExplorationManager em;
 	private OrderManager om;
 	private RobotManager rm;
+	private Order tmpOrder;
 	WarehouseRobot robot;
 	WarehouseRepresentation representation;
 
@@ -41,7 +42,7 @@ public class RobotExecute implements IRobotExecute{
 
 	@Override
 	public void orderStart() {
-		om.orderStart();		
+		om.orderStart(tmpOrder);		
 	}
 
 	@Override
@@ -51,6 +52,7 @@ public class RobotExecute implements IRobotExecute{
 
 	@Override
 	public Date calculateOrderTime(Order order) {
+		tmpOrder = order;
 		return om.calculateOrderTime(order);
 	}
 

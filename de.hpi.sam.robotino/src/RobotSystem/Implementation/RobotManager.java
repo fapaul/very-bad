@@ -63,6 +63,7 @@ public class RobotManager extends Thread{
 		switch (robMess.getTypeOfMessage()){
 		case SERVER_ORDERTIME:
 			Order order = (Order)robMess.getContent();
+			currentOrder = order;
 			Date duration = orderManager.calculateOrderTime(order);
 			robComm.sendOrderTime(duration);
 			break;
@@ -77,7 +78,7 @@ public class RobotManager extends Thread{
 			break;
 		
 		case SERVER_ORDER:
-			orderManager.orderStart();
+			orderManager.orderStart(currentOrder);
 			break;
 		
 		case SERVER_WAKEUP:

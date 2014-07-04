@@ -1,10 +1,10 @@
 package Datatypes.Added;
 
-import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.environment.Position;
+import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.CartArea;
-import de.hpi.sam.warehouse.WarehouseRobot;
+import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
 
 public class CartDestination extends RoomPointCartArea {
@@ -13,9 +13,12 @@ public class CartDestination extends RoomPointCartArea {
 
 	public CartDestination(CartArea cartArea) {
 		super(cartArea);
+		WarehouseRepresentation rep = new WarehouseRepresentation();
 		carts = cartArea.getCartPositions();
+		
 		this.location = (Position)carts.get(0);
-		this.room = warehouseRobot.getRoomFor(location);
+		System.out.println("cart pso is " + (this.location == null));
+		this.room = rep.getRoomFor(location);
 	}
 	
 	@Override

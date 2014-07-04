@@ -47,11 +47,14 @@ public class RouteFinder implements IRouteFinder {
         }
         if(start.equals(end)) {
         //	System.out.println("S E same");
+        	Route singleEleme = new Route();
+        	singleEleme.add(to);
+        	routes.add(singleEleme);
         	return routes;
         }
        // System.out.println("Start end are good");
         List<Path> paths = representation.computePaths(start, end);
-  
+        
         if(paths == null)
         	return routes;
         if(paths.size() == 0)
@@ -78,8 +81,10 @@ public class RouteFinder implements IRouteFinder {
     }
 	
 	public Route getShortestRoute(List<Route> routes) {
+		
 		if(routes.size() == 0)
-			throw new IllegalArgumentException();
+			return  new Route();
+			//	throw new IllegalArgumentException();
 		
 		Route smallest = routes.get(0);
 		if(smallest == null)
@@ -104,6 +109,7 @@ public class RouteFinder implements IRouteFinder {
 		
 		//List<CartPosition> cartAreaPos = new LinkedList<CartPosition>();
 		for(CartArea area : stockMang.getCartAreas()) {
+			
 			if(area.getCartPositions().size() == 0) 
 				continue;
 			
@@ -115,12 +121,14 @@ public class RouteFinder implements IRouteFinder {
 			//if(fromPoint.equals(areaPoint) || areaPoint == null)
 			//	return cartAreaRoutes;
 			//System.out.println("AreaPoint is " + fromPoint.getLocation().getXPosition()+ " " + fromPoint.getLocation().getZPosition());
-			
 			//System.out.println("AreaPoint is " + areaPoint.getLocation().getXPosition()+ " " + areaPoint.getLocation().getZPosition());
+			
 			if(calculateSubRoutes(fromPoint, areaPoint).size() == 0)
 				continue;
+		
 			cartAreaRoutes.add(getShortestRoute(calculateSubRoutes(fromPoint, areaPoint)));
 		}
+		
 		//System.out.println("Cart Areas are " + cartAreaRoutes.size());
 		return cartAreaRoutes;
 	}
@@ -131,7 +139,6 @@ public class RouteFinder implements IRouteFinder {
 		if(fromPoint.equals(toPoint))
 			System.out.println("calculateCartAreaRoutes: start and end are the same");
 		List<Route> SubRoutesAre = calculateSubRoutes(fromPoint, toPoint);
-		//System.out.println("SubRoutes are " + SubRoutesAre.size());
 		return SubRoutesAre;
 	}
 	
@@ -201,8 +208,8 @@ public class RouteFinder implements IRouteFinder {
 		//Choose next door
 		List<Route> routesToRoom = new LinkedList<Route>();
 		for(Door d : roomDoors) {
-			if(fromPoint.getRoom().equals((new RoomPointDoor(d)).getRoom()))
-				continue;
+		//	if(fromPoint.getRoom().equals((new RoomPointDoor(d)).getRoom()))
+		//		continue;
 			Route r = getShortestRoute(calculateSubRoutes(fromPoint, new RoomPointDoor(d)));
 			if(r == null)
 				// Don't add empty route

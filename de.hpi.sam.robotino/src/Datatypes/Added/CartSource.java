@@ -1,28 +1,24 @@
 package Datatypes.Added;
 
 
-import de.cpslab.robotino.RobotinoID;
 import de.cpslab.robotino.environment.Position;
 import de.hpi.sam.warehouse.WarehouseRobot;
 import de.hpi.sam.warehouse.stock.Cart;
 import de.hpi.sam.warehouse.stock.CartArea;
 import de.hpi.sam.warehouse.stock.CartPosition;
-import de.hpi.sam.warehouse.stock.Stockroom;
-import de.hpi.sam.warehouse.stock.StockroomID;
-
-
+import de.hpi.sam.warehouse.stock.WarehouseRepresentation;
 
 
 public class CartSource extends RoomPointCartArea {
 	//WarehouseRobot warehouseRobot = new WarehouseRobot(new RobotinoID("000.000.000.000"));
 	private WarehouseRobot warehouseRobot;
 	public CartSource(CartArea cartArea) {
-
 		super(cartArea);
 		carts = cartArea.getCartPositions();
 		this.location = (Position)carts.get(0);
-		//this.room = warehouseRobot.getRoomFor(location);
-		this.room = room; 
+		WarehouseRepresentation rep = new WarehouseRepresentation();
+		this.room = rep.getRoomFor(location);
+		 
 	}
 	
 	@Override
