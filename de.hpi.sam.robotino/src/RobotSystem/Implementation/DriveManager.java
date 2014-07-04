@@ -45,6 +45,12 @@ public class DriveManager implements IDriveManager { // = IDrive
 	public void drive(Route route) {
 		// Driving route
 		for (RoomPoint point : route.getRoomPoints()) {
+			if(!repres.isStockroomSafe(point.getLocation())) {
+				// If stockroom is unknown explore room
+				ExplorationManager expl = new ExplorationManager(robot, repres);
+				expl.explorationStart(point.getRoom());
+			}
+			
 			if(curCart != null) 
 				robot.transportToPositionAvoidingObstacles(point.getLocation());
 			else
